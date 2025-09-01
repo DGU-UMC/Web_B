@@ -1,6 +1,6 @@
-# 🌐 Web A
+# 🌐 Web B
 
-DGU-UMC 8기 Web 스터디 A조
+DGU-UMC 8기 Web 스터디 B조
 
 ## 👥 Member
 
