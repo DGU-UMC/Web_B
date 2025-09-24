@@ -6,7 +6,7 @@ DGU-UMC 8기 Web 스터디 B조
 
 |               셀리                |               가용😎                |              솔                  |               케이                |               준오                |
 | :---------------------------------: | :---------------------------------: | :---------------------------------: | :---------------------------------: | :---------------------------------: |
-| [김기연](https://github.com/kiyeonkimm) | [김가영](https://github.com/{gayeongID}) | [조한솔](https://github.com/hansol65) | [김하림](https://github.com/harim789) | [오창준](https://github.com/{changjunID}) |
+| [김기연](https://github.com/kiyeonkimm) | [김가영](https://github.com/{gayeongID}) | [조한솔](https://github.com/hansol65) | [김하림](https://github.com/harim789) | [오창준](https://github.com/ocjune) |
 
 <br/>
 
