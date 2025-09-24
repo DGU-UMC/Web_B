@@ -25,7 +25,10 @@ body {
 
 .todo-container__header {
   font-size: 24px;
-  margin-bottom: 16px;
+  margin-bottom: 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .todo-container__form {
@@ -41,6 +44,7 @@ body {
   border-radius: 6px;
   font-size: 16px;
   background-color: white;
+  color: black;
 }
 
 .todo-container__button {
@@ -56,11 +60,6 @@ body {
 
 .todo-container__button:hover {
   background-color: rgb(254, 8, 139);
-}
-
-.render-container {
-  font-size: 18px;
-  justify-content: center;
 }
 
 .render-container {
@@ -108,11 +107,30 @@ body {
   color: white;
   padding: 6px 10px;
   border-radius: 6px;
-  fon-size: 12px;
+  font-size: 12px;
   cursor: pointer;
   transition: background-color 0.3s ease;
 }
 
 .render-todo__item-button:hover {
   background-color: rgb(255, 0, 0);
+}
+
+.todo-container.dark {
+  background-color: gray;
+}
+
+.todo-container__header button {
+  padding: 8px 12px;
+  border: none;
+  border-radius: 4px;
+  background-color: skyblue;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.todo-container.dark .todo-container__header button {
+  background-color: #444;
+  color: white;
 }

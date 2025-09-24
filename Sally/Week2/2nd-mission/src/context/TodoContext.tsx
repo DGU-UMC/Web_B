@@ -12,6 +12,8 @@ interface iTodoContext {
   addTodo: (text: string) => void;
   completeTodo: (todo: tTodo) => void;
   deleteTodo: (todo: tTodo) => void;
+  theme: string;
+  toggleTheme: () => void;
 }
 
 // eslint-disable-next-line react-refresh/only-export-components
@@ -20,6 +22,11 @@ export const TodoContext = createContext<iTodoContext | undefined>(undefined);
 export const TodoProvider = ({ children }: PropsWithChildren) => {
   const [todos, setTodos] = useState<tTodo[]>([]);
   const [doneTodos, setDoneTodos] = useState<tTodo[]>([]);
+  const [theme, setTheme] = useState("light");
+
+  const toggleTheme = () => {
+    setTheme((prevTheme) => (prevTheme === "light" ? "dark" : "light"));
+  };
 
   const addTodo = (text: string): void => {
     const newTodo: tTodo = { id: Date.now(), text };
@@ -45,6 +52,8 @@ export const TodoProvider = ({ children }: PropsWithChildren) => {
         addTodo,
         completeTodo: completeSubmit,
         deleteTodo: deleteSubmit,
+        theme,
+        toggleTheme,
       }}
     >
       {children}

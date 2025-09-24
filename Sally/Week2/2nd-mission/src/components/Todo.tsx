@@ -3,11 +3,17 @@ import TodoList from "./TodoList";
 import { useTodo } from "../context/TodoContext";
 
 const Todo = () => {
-  const { todos, completeTodo, deleteTodo, doneTodos } = useTodo();
+  const { todos, completeTodo, deleteTodo, doneTodos, theme, toggleTheme } =
+    useTodo();
 
   return (
-    <div className="todo-container">
-      <h1 className="todo-container__header">Todo</h1>
+    <div className={`todo-container ${theme}`}>
+      <div className="todo-container__header">
+        <h1>Todo</h1>
+        <button onClick={toggleTheme}>
+          {theme === "light" ? "Dark Mode" : "Light Mode"}
+        </button>
+      </div>
       <TodoForm />
       <div className="render-container">
         <TodoList
