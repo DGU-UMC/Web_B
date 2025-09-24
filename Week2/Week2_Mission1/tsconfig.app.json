@@ -24,5 +24,9 @@
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true
   },
-  "include": ["src"]
+  "include": [
+    "src",
+    "../context(2주차)/ThemeToggleButton.tsx",
+    "../context(2주차)/ThemeProvider.tsx"
+  ]
 }
