@@ -23,7 +23,7 @@ function MovieDetailPage() {
       }
     };
 
-    const url = `https://api.themoviedb.org/3/movie/${movieId}?language=en-US`;
+    const url = `https://api.themoviedb.org/3/movie/${movieId}?language=ko-KR`;
     const options = {
       method: "GET",
       headers: {
