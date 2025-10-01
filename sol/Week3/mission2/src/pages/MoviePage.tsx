@@ -48,14 +48,6 @@ export default function MoviePage() {
     );
   }
 
-  // if (isPending) {
-  //   return (
-  //     <div>
-  //       <LoadingSpinner />
-  //     </div>
-  //   );
-  // }
-
   return (
     <>
       <div className="flex justify-center items-center gap-6 mt-5">
