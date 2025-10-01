@@ -20,7 +20,11 @@ export default function MoviePage() {
   }>();
 
   useEffect(() => {
-    const fetchMoives = async () => {
+    setPage(1);
+  }, [category]);
+
+  useEffect(() => {
+    const fetchMovies = async () => {
       setIsLoading(true);
       try {
         const { data } = await axios<MovieResponse>(
@@ -38,12 +42,12 @@ export default function MoviePage() {
         setIsLoading(false);
       }
     };
-    fetchMoives();
+    fetchMovies();
   }, [page, category]);
   if (isError)
     return (
       <div>
-        <span text-red-500>에러가 발생했습니다.</span>
+        <span className="text-red-500">에러가 발생했습니다.</span>
       </div>
     );
 
