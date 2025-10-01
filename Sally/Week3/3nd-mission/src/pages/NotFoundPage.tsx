@@ -1,6 +1,6 @@
 // src/pages/not-found.tsx
 const NotFound = () => {
-  return <h1>너는 찾을 수 없는 페이지 야호~!</h1>;
+  return <h1>존재하지 않은 페이지입니다.</h1>;
 };
 
 export default NotFound;

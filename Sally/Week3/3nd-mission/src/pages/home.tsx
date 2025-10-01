@@ -1,6 +1,14 @@
+import { Outlet } from "react-router-dom";
+import { Navbar } from "../components/navbar";
+
 // src/pages/home.tsx
 const HomePage = () => {
-  return <h1 className="bg-amber-200">Home Page 야호~!</h1>;
+  return (
+    <div>
+      <Navbar />
+      <Outlet />
+    </div>
+  );
 };
 
 export default HomePage;
