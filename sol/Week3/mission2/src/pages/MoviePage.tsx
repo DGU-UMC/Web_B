@@ -40,6 +40,10 @@ export default function MoviePage() {
     fetchMovies();
   }, [page, category]);
 
+  useEffect((): void => {
+    setPage(1);
+  }, [category]);
+
   if (isError) {
     return (
       <div>
