@@ -1,7 +1,5 @@
 import './App.css'
-import { Link } from './router/Link';
-import { Route } from './router/Route';
-import { Router } from './router/Routes';
+import { BrowserRouter, Link, Route, Routes } from 'react-router-dom';
 
 const MatthewPage = () => <h1>메튜 페이지</h1>;
 const KeiPage = () => <h1>케이 페이지</h1>;
@@ -14,7 +12,7 @@ const Header = () => {
       <Link to='/matthew'>MATTHEW</Link>
       <Link to='/kei'>KEI</Link>
       <Link to='/harim'>HARIM</Link>
-      <Link to='not-found'>NOT FOUND</Link>
+      <Link to='/not-found'>NOT FOUND</Link>
     </nav>
   );
 };
@@ -22,13 +20,15 @@ const Header = () => {
 function App() {
   return (
     <>
+    <BrowserRouter>      
       <Header />
       <Routes>
-        <Route path='/matthew' component={MatthewPage} />
-        <Route path='/kei' component={KeiPage} />
-        <Route path='/harim' component={HarimPage} />
-        <Route path='/not-found' component={NotFoundPage} />
+        <Route path='/matthew' element={<MatthewPage />} />
+        <Route path='/kei' element={<KeiPage />} />
+        <Route path='/harim' element={<HarimPage />} />
+        <Route path='/not-found' element={<NotFoundPage />} />
       </Routes>
+    </BrowserRouter>
     </>
   );
 }
