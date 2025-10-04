@@ -7,7 +7,7 @@ interface MovieCardProps {
   category: string;
 }
 
-function MovieCard({ movie: movie, category: category }: MovieCardProps) {
+function MovieCard({ movie, category }: MovieCardProps) {
   const [isHovered, setIsHovered] = useState(false);
 
   const navigate = useNavigate();
