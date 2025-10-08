@@ -42,7 +42,7 @@ function MovieDetailPage() {
             alt={`${movie.title}의 이미지`}
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent backdrop-blur-md"></div>
-          <div className="absolute bg-white/75 z-10 w-4/6 h-3/4 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-xl shadow-2xl p-4 flex justify-center items-center">
+          <div className="absolute bg-white/55 z-10 w-4/6 h-3/4 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-xl shadow-2xl p-4 flex justify-center items-center">
             <div className="p-6 w-1/3 overflow-hidden">
               <img
                 src={`https://image.tmdb.org/t/p/w300${movie.poster_path}`}
@@ -59,6 +59,7 @@ function MovieDetailPage() {
             </div>
           </div>
         </div>
+        // <div></div>
       )}
     </>
   );
