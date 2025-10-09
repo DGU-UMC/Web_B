@@ -1,33 +1,28 @@
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import "./App.css";
 import HomePage from "./pages/HomePage";
-import { createBrowserRouter, RouterProvider } from "react-router";
 import NotFoundPage from "./pages/NotFoundPage";
-import MoviePage from "./pages/MoviePage";
-import MovieDetailPage from "./pages/MovieDetailPage";
+import LoginPage from "./pages/LoginPage";
+import HomeLayout from "./layouts/HomeLayout";
+import SingupPage from "./pages/SignupPage";
+import MyPage from "./pages/MyPage";
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <HomePage />,
+    element: <HomeLayout />,
     errorElement: <NotFoundPage />,
     children: [
-      {
-        path: "movies/:category",
-        element: <MoviePage />,
-      },
-      {
-        path: "movie/:movieId",
-        element: <MovieDetailPage />,
-      },
+      { index: true, element: <HomePage /> },
+      { path: "login", element: <LoginPage /> },
+      { path: "signup", element: <SingupPage /> },
+      { path: "my", element: <MyPage /> },
     ],
   },
 ]);
 
 function App() {
-  return (
-    <>
-      <RouterProvider router={router} />
-    </>
-  );
+  return <RouterProvider router={router} />;
 }
+
 export default App;
