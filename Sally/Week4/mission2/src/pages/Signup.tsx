@@ -7,7 +7,7 @@ import { useState } from "react";
 
 const schema = z
   .object({
-    email: z.string().email({ message: "올바른 형식이 아닙니다." }),
+    email: z.email({ message: "올바른 형식이 아닙니다." }),
     password: z
       .string()
       .min(8, {

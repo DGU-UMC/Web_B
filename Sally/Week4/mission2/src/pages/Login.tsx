@@ -2,7 +2,7 @@ import { postSignin } from "../apis/auth";
 import { LOCAL_STORAGE_KEY } from "../constants/key";
 import useForm from "../hooks/useForm";
 import { useLocalStorage } from "../hooks/useLocalStorage";
-import { type UserSigninInformation, validateSingin } from "../utils/validate";
+import { type UserSigninInformation, validateSignin } from "../utils/validate";
 import { useNavigate } from "react-router-dom";
 
 const Login = () => {
@@ -11,7 +11,7 @@ const Login = () => {
   const { values, errors, touched, getInputProps } =
     useForm<UserSigninInformation>({
       initialValues: { email: "", password: "" },
-      validate: validateSingin,
+      validate: validateSignin,
     });
 
   const handlesubmit = async () => {
@@ -32,7 +32,7 @@ const Login = () => {
     <div className="pt-10 flex flex-col items-center justify-center">
       <div className="w-full max-w-md gap-3 flex flex-col">
         <div
-          onClick={() => navigate(`/`)}
+          onClick={() => navigate(-1)}
           className="text-2xl top-4 left-4 absolute"
         >
           {"<"}

@@ -17,8 +17,8 @@ function validateUser(values: UserSigninInformation) {
   return errors;
 }
 
-function validateSingin(values: UserSigninInformation) {
+function validateSignin(values: UserSigninInformation) {
   return validateUser(values);
 }
 
-export { validateSingin };
+export { validateSignin };
