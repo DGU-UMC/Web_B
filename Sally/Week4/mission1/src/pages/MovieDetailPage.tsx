@@ -1,52 +1,29 @@
-import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import axios from "axios";
 import type { Movie, Credits } from "../types/movie";
 import LoadingSpinner from "../components/LoadingSpinner";
+import { useCustomFetch } from "../hooks/useCustomFetch";
 
 export const MovieDetailPage = () => {
   const { movieId } = useParams<{ movieId: string }>();
-  const [movie, setMovie] = useState<Movie | null>(null);
-  const [credits, setCredits] = useState<Credits | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isError, setIsError] = useState(false);
 
-  useEffect(() => {
-    const fetchMovie = async () => {
-      setIsLoading(true);
-      try {
-        const [movieResponse, creditsResponse] = await Promise.all([
-          axios<Movie>(
-            `https://api.themoviedb.org/3/movie/${movieId}?language=ko-KR`,
-            {
-              headers: {
-                Authorization: `Bearer ${import.meta.env.VITE_TMDB_KEY}`,
-              },
-            }
-          ),
-          axios<Credits>(
-            `https://api.themoviedb.org/3/movie/${movieId}/credits?language=ko-KR`,
-            {
-              headers: {
-                Authorization: `Bearer ${import.meta.env.VITE_TMDB_KEY}`,
-              },
-            }
-          ),
-        ]);
-        setMovie(movieResponse.data);
-        setCredits(creditsResponse.data);
-      } catch (error) {
-        console.error(error);
-        setIsError(true);
-      } finally {
-        setIsLoading(false);
-      }
-    };
+  const {
+    data: movie,
+    isLoading: isMovieLoading,
+    isError: isMovieError,
+  } = useCustomFetch<Movie>(
+    `https://api.themoviedb.org/3/movie/${movieId}?language=ko-KR`
+  );
 
-    if (movieId) {
-      fetchMovie();
-    }
-  }, [movieId]);
+  const {
+    data: credits,
+    isLoading: isCreditsLoading,
+    isError: isCreditsError,
+  } = useCustomFetch<Credits>(
+    `https://api.themoviedb.org/3/movie/${movieId}/credits?language=ko-KR`
+  );
+
+  const isLoading = isMovieLoading || isCreditsLoading;
+  const isError = isMovieError || isCreditsError;
 
   if (isLoading) {
     return (
