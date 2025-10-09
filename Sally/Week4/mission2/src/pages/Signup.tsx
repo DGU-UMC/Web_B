@@ -4,26 +4,19 @@ import { useNavigate } from "react-router-dom";
 import z from "zod";
 import { postSignup } from "../apis/auth";
 import { useState } from "react";
+import userImage from "../assets/user.png";
 
 const schema = z
   .object({
-    email: z.email({ message: "올바른 형식이 아닙니다." }),
+    email: z.email({ message: "올바른 이메일 형식이 아닙니다." }),
     password: z
       .string()
-      .min(8, {
-        message: "비밀번호는 8자 이상이어야 합니다.",
-      })
-      .max(20, {
-        message: "비밀번호는 20자 이하여야 합니다.",
-      }),
+      .min(8, { message: "비밀번호는 8자 이상이어야 합니다." })
+      .max(20, { message: "비밀번호는 20자 이하여야 합니다." }),
     passwordCheck: z
       .string()
-      .min(8, {
-        message: "비밀번호는 8자 이상이어야 합니다.",
-      })
-      .max(20, {
-        message: "비밀번호는 20자 이하여야 합니다.",
-      }),
+      .min(8, { message: "비밀번호는 8자 이상이어야 합니다." })
+      .max(20, { message: "비밀번호는 20자 이하여야 합니다." }),
     name: z.string().min(1, { message: "이름을 입력해주세요." }),
   })
   .refine((data) => data.password === data.passwordCheck, {
@@ -38,6 +31,8 @@ const Signup = () => {
   const [inputEmail, setInputEmail] = useState("");
   const [isPasswordValidated, setIsPasswordValidated] = useState(false);
   const navigate = useNavigate();
+  const [showPassword, setShowPassword] = useState(false);
+  const [showPasswordCheck, setShowPasswordCheck] = useState(false);
 
   const {
     register,
@@ -52,7 +47,7 @@ const Signup = () => {
       password: "",
       passwordCheck: "",
     },
-    resolver: zodResolver(schema), //오류 메시지
+    resolver: zodResolver(schema),
     mode: "onBlur",
   });
 
@@ -70,81 +65,140 @@ const Signup = () => {
   };
 
   return (
-    <div className="pt-10 flex flex-col items-center justify-center">
-      <div className="w-full max-w-md gap-3 flex flex-col relative">
-        <div
-          onClick={() => navigate(`/`)}
-          className="text-2xl top-4 left-4 absolute cursor-pointer"
-        >
-          {"<"}
-        </div>
-        <h2 className="text-3xl font-bold text-center mb-6">회원가입</h2>{" "}
+    <div className="min-h-screen flex flex-col items-center justify-center">
+      <div className="w-full max-w-md flex flex-col gap-6">
+        <header className="relative flex items-center justify-center py-4">
+          <button
+            onClick={() => navigate(-1)}
+            className="absolute left-0 text-3xl text-gray-700 hover:text-gray-900"
+          >
+            {"<"}
+          </button>
+          <h2 className="text-3xl font-bold text-center">회원가입</h2>
+        </header>
+
         {!isEmailValidated && (
-          <>
-            <input
-              {...register("email")}
-              className={`border w-full px-3 py-2 focus:border-gray-500 rounded-sm ${
-                errors?.email ? "border-red-500 bg-red-200" : "border-gray-300"
-              }`}
-              type="email"
-              placeholder="이메일"
-            />
-            {errors?.email && (
-              <div className="text-red-500 text-sm">{errors.email.message}</div>
-            )}
+          <div className="space-y-6">
+            <div>
+              <label
+                htmlFor="email"
+                className="block py-1 text-xl text-gray-700"
+              >
+                이메일
+              </label>
+              <input
+                {...register("email")}
+                id="email"
+                type="email"
+                placeholder="이메일을 입력하세요"
+                className={`border w-full px-3 py-2 focus:border-gray-500 rounded-sm ${
+                  errors.email ? "border-red-500 bg-red-200" : "border-gray-300"
+                }`}
+              />
+              {errors.email && (
+                <p className="text-sm text-red-500 pt-1">
+                  {errors.email.message}
+                </p>
+              )}
+            </div>
+
             <button
               type="button"
               onClick={async () => {
                 if (await trigger("email")) {
-                  setIsEmailValidated((prev) => !prev);
+                  setIsEmailValidated(true);
                   setInputEmail(watch("email"));
                 }
               }}
               disabled={isSubmitting || !!errors.email || watch("email") === ""}
-              className="w-full bg-blue-600 text-white py-3 rounded-md text-lg font-medium hover:bg-blue-700 transition-colors cursor-pointer disabled:bg-gray-300 disabled:cursor-not-allowed"
+              className="mt-10 w-full flex justify-center py-3 px-4 border border-transparent rounded-md text-xl font-medium text-white bg-rose-300 hover:bg-rose-400 disabled:bg-gray-300"
             >
               다음
             </button>
-          </>
+          </div>
         )}
+
         {isEmailValidated && !isPasswordValidated && (
-          <>
-            <span className="text-base font-normal">✉️ {inputEmail}</span>
-            <input
-              {...register("password")}
-              className={`border w-full px-3 py-2 focus:border-gray-500 rounded-sm ${
-                errors?.password
-                  ? "border-red-500 bg-red-200"
-                  : "border-gray-300"
-              }`}
-              type="password"
-              placeholder="비밀번호"
-            />
-            {errors?.password && (
-              <div className="text-red-500 text-sm">
-                {errors.password.message}
+          <div className="space-y-6">
+            <div className="flex items-center justify-center py-2 rounded-md bg-rose-50 border border-rose-200">
+              <span className="text-xl font-semibold text-gray-700 flex items-center gap-2">
+                💌 <span className="text-gray-800">{inputEmail}</span>
+              </span>
+            </div>
+
+            <div className="mt-4">
+              <label
+                htmlFor="password"
+                className="block py-1 text-xl text-gray-700"
+              >
+                비밀번호
+              </label>
+              <div className="relative">
+                <input
+                  {...register("password")}
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  placeholder="비밀번호를 입력하세요"
+                  className={`w-full px-3 py-2 pr-10 border rounded-sm focus:border-gray-500 ${
+                    errors.password
+                      ? "border-red-500 bg-red-200"
+                      : "border-gray-300"
+                  }`}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((prev) => !prev)}
+                  className="absolute inset-y-0 right-3 flex items-center text-gray-500 hover:text-gray-700"
+                >
+                  {showPassword ? "🙈" : "🙉"}
+                </button>
               </div>
-            )}
-            <input
-              {...register("passwordCheck")}
-              className={`border w-full px-3 py-2 focus:border-gray-500 rounded-sm ${
-                errors?.passwordCheck
-                  ? "border-red-500 bg-red-200"
-                  : "border-gray-300"
-              }`}
-              type="password"
-              placeholder="비밀번호 확인"
-            />
-            {errors?.passwordCheck && (
-              <div className="text-red-500 text-sm">
-                {errors.passwordCheck.message}
+              {errors.password && (
+                <p className="text-sm text-red-500 pt-1">
+                  {errors.password.message}
+                </p>
+              )}
+            </div>
+
+            <div className="mt-4">
+              <label
+                htmlFor="passwordCheck"
+                className="block py-1 text-xl text-gray-700"
+              >
+                비밀번호 확인
+              </label>
+              <div className="relative">
+                <input
+                  {...register("passwordCheck")}
+                  id="passwordCheck"
+                  type={showPassword ? "text" : "password"}
+                  placeholder="비밀번호를 다시 입력하세요"
+                  className={`border w-full px-3 py-2 focus:border-gray-500 rounded-sm ${
+                    errors.passwordCheck
+                      ? "border-red-500 bg-red-200"
+                      : "border-gray-300"
+                  }`}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPasswordCheck((prev) => !prev)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                >
+                  {showPasswordCheck ? "🙈" : "🙉"}
+                </button>
               </div>
-            )}
+              {errors.passwordCheck && (
+                <p className="text-sm text-red-500 pt-1">
+                  {errors.passwordCheck.message}
+                </p>
+              )}
+            </div>
+
             <button
               type="button"
               onClick={async () => {
                 if (await trigger(["password", "passwordCheck"])) {
-                  setIsPasswordValidated((prev) => !prev);
+                  setIsPasswordValidated(true);
                 }
               }}
               disabled={
@@ -154,35 +208,53 @@ const Signup = () => {
                 watch("password") === "" ||
                 watch("passwordCheck") === ""
               }
-              className="w-full flex justify-center py-3 px-4 border border-transparent rounded-md text-xl font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400"
+              className="mt-10 w-full flex justify-center py-3 px-4 border border-transparent rounded-md text-xl font-medium text-white bg-rose-300 hover:bg-rose-400 disabled:bg-gray-300"
             >
               다음
             </button>
-          </>
+          </div>
         )}
+
         {isEmailValidated && isPasswordValidated && (
-          <>
-            <div className="m-4 w-[150px] h-[150px] rounded-[50%] bg-gray-500 self-center"></div>
-            <input
-              {...register("name")}
-              className={`border w-full px-3 py-2 focus:border-gray-500 rounded-sm ${
-                errors?.name ? "border-red-500 bg-red-200" : "border-gray-300"
-              }`}
-              type="text"
-              placeholder="이름"
+          <div className="space-y-6">
+            <img
+              src={userImage}
+              alt="profile"
+              className="block mx-auto m-4 w-[150px] h-[150px] rounded-full"
             />
-            {errors?.name && (
-              <div className="text-red-500 text-sm">{errors.name.message}</div>
-            )}
+
+            <div>
+              <label
+                htmlFor="name"
+                className="block py-1 text-xl text-gray-700"
+              >
+                이름
+              </label>
+              <input
+                {...register("name")}
+                id="name"
+                type="text"
+                placeholder="이름을 입력하세요"
+                className={`border w-full px-3 py-2 focus:border-gray-500 rounded-sm ${
+                  errors.name ? "border-red-500 bg-red-200" : "border-gray-300"
+                }`}
+              />
+              {errors.name && (
+                <p className="text-sm text-red-500 pt-1">
+                  {errors.name.message}
+                </p>
+              )}
+            </div>
+
             <button
               type="button"
               onClick={handleSubmit(onSubmit)}
               disabled={isSubmitting || !!errors.name || watch("name") === ""}
-              className="w-full bg-blue-600 text-white py-3 rounded-md text-lg font-medium hover:bg-blue-700 transition-colors cursor-pointer disabled:bg-gray-300 disabled:cursor-not-allowed"
+              className="mt-10 w-full flex justify-center py-3 px-4 border border-transparent rounded-md text-xl font-medium text-white bg-rose-300 hover:bg-rose-400 disabled:bg-gray-300"
             >
               회원가입
             </button>
-          </>
+          </div>
         )}
       </div>
     </div>

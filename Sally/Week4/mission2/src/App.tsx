@@ -5,6 +5,7 @@ import NotFound from "./pages/NotFound";
 import Login from "./pages/Login";
 import HomeLayout from "./layouts/HomeLayout";
 import Signup from "./pages/Signup";
+import Mypage from "./pages/Mypage";
 
 const router = createBrowserRouter([
   {
@@ -15,6 +16,7 @@ const router = createBrowserRouter([
       { index: true, element: <Home /> },
       { path: "login", element: <Login /> },
       { path: "signup", element: <Signup /> },
+      { path: "mypage", element: <Mypage /> },
     ],
   },
 ]);

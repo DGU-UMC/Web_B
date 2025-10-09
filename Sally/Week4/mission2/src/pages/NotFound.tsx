@@ -1,11 +1,5 @@
-import { Outlet } from "react-router-dom";
-
 const NotFound = () => {
-  return (
-    <div>
-      <Outlet />
-    </div>
-  );
+  return <div>존재하지 않는 페이지입니다.</div>;
 };
 
 export default NotFound;

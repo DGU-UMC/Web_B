@@ -21,3 +21,8 @@ export const postSignin = async (
 
   return data;
 };
+
+export const getMyInfo = async () => {
+  const { data } = await axiosInstance.get("/v1/users/me");
+  return data;
+};
