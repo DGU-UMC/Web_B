@@ -1,47 +1,21 @@
-import { useEffect, useState } from "react";
 import { useParams } from "react-router";
 import type { Movie } from "../types/movie";
-import axios from "axios";
 import { LoadingSpinner } from "../components/LoadingSpinner";
+import { useCustomFetch } from "../hooks/useCustomFetch";
 
 const MovieDetailPage = () => {
   const { movieId } = useParams<{ movieId: string }>();
 
-  const [movieDetail, setMovieDetail] = useState<Movie | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const fetchUrl = movieId
+    ? `https://api.themoviedb.org/3/movie/${movieId}?language=ko-KR`
+    : null;
 
-  useEffect(() => {
-    if (!movieId) {
-      setLoading(false);
-      setError("유효하지 않은 영화 ID입니다.");
-      return;
-    }
-
-    const fetchMovieDetail = async () => {
-      setLoading(true);
-      setError(null);
-
-      try {
-        const { data } = await axios.get<Movie>(
-          `https://api.themoviedb.org/3/movie/${movieId}?language=ko-KR`,
-          {
-            headers: {
-              Authorization: `Bearer ${import.meta.env.VITE_TMDB_KEY}`,
-            },
-          }
-        );
-        setMovieDetail(data);
-      } catch (e) {
-        console.error("영화 상세 정보를 불러오는 데 실패했습니다.", e);
-        setError("영화 정보를 찾을 수 없습니다.");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchMovieDetail();
-  }, [movieId]);
+  // useCustomFetch 훅 적용
+  const {
+    data: movieDetail,
+    isPending: loading,
+    isError: error,
+  } = useCustomFetch<Movie>(fetchUrl);
 
   if (loading) {
     return (
