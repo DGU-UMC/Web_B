@@ -37,7 +37,7 @@ axiosInstance.interceptors.response.use(
     // 401 에러면서, 아직 재시도 하지 않은 요청 경우 처리
     if (
       error.response &&
-      error.reponse.status === 401 &&
+      error.response.status === 401 &&
       !originalRequest._retry
     ) {
       if (originalRequest.url === "/v1/auth/refresh") {
@@ -69,13 +69,13 @@ axiosInstance.interceptors.response.use(
             refresh: refreshToken,
           });
 
-          const { setItem: setAcessToken } = useLocalStorage(
+          const { setItem: setAccessToken } = useLocalStorage(
             LOCAL_STORAGE_KEY.accessToken
           );
           const { setItem: setRefreshToken } = useLocalStorage(
-            LOCAL_STORAGE_KEY.accessToken
+            LOCAL_STORAGE_KEY.refreshToken
           );
-          setAcessToken(data.data.access);
+          setAccessToken(data.data.access);
           setRefreshToken(data.data.refresh);
 
           return data.data.accessToken;

@@ -1,4 +1,4 @@
-import type { CommonRespnse } from "./common";
+import type { CommonResponse } from "./common";
 
 // 회원가입
 export type RequestSignupDto = {
@@ -9,7 +9,7 @@ export type RequestSignupDto = {
   password: string;
 };
 
-export type ResponseSignupDto = CommonRespnse<{
+export type ResponseSignupDto = CommonResponse<{
   id: number;
   name: string;
   email: string;
@@ -25,14 +25,14 @@ export type RequestSigninDto = {
   password: string;
 };
 
-export type ResponseSigninDto = CommonRespnse<{
+export type ResponseSigninDto = CommonResponse<{
   email: string;
   name: string;
   accessToken: string;
   refreshToken: string;
 }>;
 
-export type ResponseMyInfoDto = CommonRespnse<{
+export type ResponseMyInfoDto = CommonResponse<{
   id: number;
   name: string;
   email: string;

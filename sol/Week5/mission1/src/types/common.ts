@@ -1,4 +1,4 @@
-export type CommonRespnse<T> = {
+export type CommonResponse<T> = {
   status: boolean;
   statusCode: number;
   message: string;
