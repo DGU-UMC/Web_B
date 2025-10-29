@@ -68,7 +68,7 @@ axiosInstance.interceptors.response.use(
       originalRequest._retry = true;
 
       // 이미 refresh 요청이 진행 중이면, 그 Promise를 재사용
-      if (refreshPromise) {
+      if (!refreshPromise) {
         // refresh 요청 실행 후, Promise를 전역 변수에 할당
         refreshPromise = (async () => {
           const { getItem: getRefreshToken } = useLocalStorage(
@@ -111,15 +111,14 @@ axiosInstance.interceptors.response.use(
       }
 
       // 진행 중인 refreshPromise가 해결될 때까지 기다림
-      return refreshPromise?.then((newAccessToken) => {
+      return refreshPromise.then((newAccessToken) => {
         // 원본 요청의 Authorization 헤더를 갱신된 토큰으로 업데이트
         originalRequest.headers["Authorization"] = `Bearer ${newAccessToken}`;
         // 업데이트 된 원본 요청을 재시도
         return axiosInstance.request(originalRequest);
       });
-
-      // 401 에러가 아닌 경우엔 그대로 오류를 반환
-      return Promise.reject(error);
     }
+    // 401 에러가 아닌 경우엔 그대로 오류를 반환
+    return Promise.reject(error);
   }
 );
