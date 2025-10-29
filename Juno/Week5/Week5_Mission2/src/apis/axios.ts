@@ -50,7 +50,7 @@ axiosInstance.interceptors.response.use(
       !originalRequest._retry
     ) {
       // refresh 엔드포인트: 401 에러(Unauthorized)가 발생한 경우, 중복 재시도 방지를 위해 로그아웃 처리
-      if (originalRequest.url === "v1/auth/refresh") {
+      if (originalRequest.url === "/v1/auth/refresh") {
         const { removeItem: removeAccessToken } = useLocalStorage(
           LOCAL_STORAGE_KEY.accessToken
         );
