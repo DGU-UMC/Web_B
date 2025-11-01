@@ -77,10 +77,10 @@ const LoginPage = () => {
                     type='button'
                     onClick={handleGoogleLogin}
                     disabled={isDisabled}
-                    className='w-full bg-[#807bff] text-white font-bold py-2 rounded-sm disabled:bg-[#ccc] hover:bg-[#665fff]'
+                    className='w-full bg-blue-600 text-white py-3 rounded-md text-lg font-medium hover:bg-blue-700 transition-colors cursor-pointer disabled:bg-slate-400'
                 >
-                    <div>
-                        <img src={'/images/google.svg'} />
+                    <div className='flex items-center justify-center gap-4'>
+                        <img src={'/images/google.svg'} alt='Google Logo Image'/>
                         <span>
                             구글 로그인
                         </span>
