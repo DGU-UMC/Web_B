@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, keepPreviousData } from '@tanstack/react-query';
 import type { PagiNationDto } from '../../types/common';
 import { getLpList } from '../../apis/lp';
 import { QUERY_KEY } from '../../constants/key';
@@ -15,12 +15,12 @@ import { QUERY_KEY } from '../../constants/key';
 //     hasNext: false,
 // };
 
-function useGetLpList({ cursor, search, order, limit }: PagiNationDto) {
+function useGetLpList({ search, order, limit }: PagiNationDto) {
     return useQuery({
         queryKey:[QUERY_KEY.lps, search, order],
         queryFn: () => 
             getLpList({
-                cursor,
+                cursor: 0,
                 search,
                 order,
                 limit,
@@ -34,7 +34,7 @@ function useGetLpList({ cursor, search, order, limit }: PagiNationDto) {
 
             //initialData: initialLpListData,
 
-            //keepPreviousData: true,
+            placeholderData: keepPreviousData,
 
             select: (data) => data.data.data,
     });

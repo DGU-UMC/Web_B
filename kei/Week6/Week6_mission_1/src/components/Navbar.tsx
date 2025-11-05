@@ -1,6 +1,7 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.tsx';
-import { useMyInfo } from '../hooks/useMyInfo.ts';
+import { useEffect, useState } from 'react';
+import { axiosInstance } from '../apis/axios.ts';
 
 interface NavbarProps {
   onMenuToggle: () => void;
@@ -8,11 +9,24 @@ interface NavbarProps {
 
 const Navbar = ({ onMenuToggle }: NavbarProps) => {
     const  { accessToken } = useAuth();
-    const { data } = useMyInfo();
     const navigate = useNavigate();
     const { logout } = useAuth();
+    const [username, setUsername] = useState('');
 
-    const username = data?.data?.name ?? '';
+    useEffect(() => {
+        //로그인 한 경우에만 내 정보 요청
+        const fetch = async () => {
+            if (!accessToken) return;
+            try {
+                const res = await axiosInstance.get('/v1/users/me');
+                setUsername(res.data.data.name);
+            } catch (e) {
+                console.log('유저 정보 불러오기 실패', e);
+            }
+        };
+
+        fetch();
+    }, [accessToken]);
 
     const handleLogout = async () => {
         await logout();

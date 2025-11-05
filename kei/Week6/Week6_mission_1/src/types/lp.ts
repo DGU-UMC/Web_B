@@ -18,10 +18,10 @@ export type Lp = {
     thumbnail: string;
     published: boolean;
     authorId: number;
-    createAt: Date;
-    updatedAt: Date;
+    createdAt: string;
+    updatedAt: string;
     tags: Tag[];
-    lkes: Likes[];
+    likes: Likes[];
 };
 
 export type ResponseLpListDto = CursorBasedResponse<Lp[]>;
