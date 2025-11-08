@@ -112,9 +112,6 @@ export default function LpDetailPage() {
     <div className="m-10 rounded-xl bg-zinc-500/85 shadow-2xl p-6">
       <div className="flex items-start justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-full bg-emerald-600/80 text-white grid place-items-center text-sm font-semibold">
-            {editorName}
-          </div>
           <div className="leading-tight">
             <div className="text-sm text-zinc-300">{editorName}</div>
             <h1 className="text-2xl font-semibold text-zinc-100">{lp.title}</h1>
@@ -139,8 +136,12 @@ export default function LpDetailPage() {
       </div>
 
       <div className="flex items-center justify-center">
-        <div className="m-10 w-100 h-100 rounded-xl bg-zinc-800/50 p-4 shadow-xl">
-          <img src={lp.thumbnail} alt={lp.title} className="rounded-lg shadow mx-auto" />
+        <div className="m-10 w-100 h-100 rounded-xl bg-zinc-800/50 p-5 shadow-xl">
+          <img 
+            src={lp.thumbnail}
+            alt={lp.title}
+            className='w-90 h-90 rounded-lg object-cover'
+          />
         </div>
       </div>
 
