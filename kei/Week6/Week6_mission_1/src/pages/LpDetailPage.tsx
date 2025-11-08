@@ -1,12 +1,176 @@
-import { useParams } from "react-router-dom";
+import { Link, useNavigate, useParams, useLocation } from "react-router-dom";
+import useGetLp from "../hooks/queries/useGetLp";
+import { useAuth } from "../context/AuthContext";
+import useLikeLp from "../hooks/mutations/useLikeLp";
+import useDeleteLp from "../hooks/mutations/useDeleteLp";
+import { useEffect, useState } from "react";
+import { axiosInstance } from "../apis/axios";
+import ComFirmModal from "../components/ComFirmModal";
+
+function formatRelativeKR(iso?: string) {
+  if (!iso) return "";
+  const d = new Date(iso);
+  const diff = (Date.now() - d.getTime()) / 1000;
+  if (diff < 60) return "방금 전";
+  if (diff < 3600) return `${Math.floor(diff / 60)}분 전`;
+  if (diff < 86400) return `${Math.floor(diff / 3600)}시간 전`;
+  return `${Math.floor(diff / 86400)}일 전`;
+}
 
 export default function LpDetailPage() {
-    const { lpid } = useParams();
+  const { lpid } = useParams();
+  const idNum = Number(lpid);
+  const { accessToken } = useAuth();
+  const nav = useNavigate();
+  const location = useLocation();
+
+  const [editorName, setEditorName] = useState("");
+  const isGuest = !accessToken;
+
+    // ✅ 로그인 상태에서만 데이터 패칭
+  const { data: lp, isPending, error, refetch } = useGetLp(lpid);
+
+  useEffect(() => {
+    if (!lp?.authorId) {
+      setEditorName("");
+      return;
+    }
+    let ignore = false;
+    (async () => {
+      try {
+        const res = await axiosInstance.get(`/v1/users/${lp.authorId}`);
+        const name = res?.data?.data?.name ?? res?.data?.name ?? "";
+        if (!ignore) setEditorName(name);
+      } catch (e) {
+        if (!ignore) setEditorName("");
+        console.log("업데이트한 사용자 정보 불러오기 실패", e);
+      }
+    })();
+    return () => {
+      ignore = true;
+    };
+  }, [lp?.authorId]);
+
+  const likeMut = useLikeLp(idNum);
+  const delMut = useDeleteLp(idNum);
+
+  // ✅ 비로그인자는 페이지 컨텐츠를 전혀 노출하지 않고 모달만 표시
+  if (isGuest) {
     return (
-        <div className='p-6'>
-            <h1 className='text-xl font-bold'>LP 상세</h1>
-            <p className='mt-2 text-gray-700'>id: { lpid }</p>
-            {/* 상세 */}
-        </div>
+      <ComFirmModal
+        open
+        title="로그인이 필요합니다"
+        message="LP 상세를 보려면 로그인해 주세요."
+        confirmText="로그인"
+        cancelText="홈으로"
+        onConfirm={() =>
+          nav("/login", { state: { from: location }, replace: true })
+        }
+        onCancel={() => nav("/", { replace: true })}
+      />
     );
-};
+  }
+
+  if (isPending) return <div className="p-6">Loading…</div>;
+
+  if (error) {
+    return (
+      <div className="p-6 space-y-3">
+        <div>불러오기 실패: {error.message}</div>
+        <button
+          onClick={() => refetch()}
+          className="px-3 py-2 rounded bg-zinc-800 text-white"
+        >
+          다시 시도
+        </button>
+      </div>
+    );
+  }
+
+  if (!lp) return <div className="p-6">데이터가 없습니다.</div>;
+
+  const rel = formatRelativeKR(lp.updatedAt);
+  const likeCount = Array.isArray(lp.likes) ? lp.likes.length : 0;
+
+  const handleGoEdit = () => nav(`/lp/${idNum}/edit`);
+  const handleLike = () => {
+    if (likeMut.isPending) return;
+    likeMut.mutate();
+  };
+  const handleDelete = async () => {
+    if (!confirm("정말 삭제하시겠어요?")) return;
+    try {
+      await delMut.mutateAsync();
+      alert("삭제되었습니다.");
+      nav("/");
+    } catch {
+      alert("삭제 실패");
+    }
+  };
+
+  return (
+    <div className="m-10 rounded-xl bg-zinc-500/85 shadow-2xl p-6">
+      <div className="flex items-start justify-between">
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 rounded-full bg-emerald-600/80 text-white grid place-items-center text-sm font-semibold">
+            {editorName}
+          </div>
+          <div className="leading-tight">
+            <div className="text-sm text-zinc-300">{editorName}</div>
+            <h1 className="text-2xl font-semibold text-zinc-100">{lp.title}</h1>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-4 text-zinc-800">
+          <span className="text-sm">{rel}</span>
+          <>
+            <button aria-label="수정" className="hover:text-zinc-200" onClick={handleGoEdit}>
+              <svg width="18" height="18" viewBox="0 0 24 24" className="fill-current">
+                <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25Zm18-11.5a1 1 0 0 0 0-1.41L18.66 1.99a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75L21 5.75Z"/>
+              </svg>
+            </button>
+            <button aria-label="삭제" className="hover:text-zinc-200" onClick={handleDelete}>
+              <svg width="18" height="18" viewBox="0 0 24 24" className="fill-current">
+                <path d="M9 3h6a1 1 0 0 1 1 1v1h4v2H4V5h4V4a1 1 0 0 1 1-1Zm1 6h2v9h-2V9Zm4 0h2v9h-2V9ZM6 9h2v9H6V9Z"/>
+              </svg>
+            </button>
+          </>
+        </div>
+      </div>
+
+      <div className="flex items-center justify-center">
+        <div className="m-10 w-100 h-100 rounded-xl bg-zinc-800/50 p-4 shadow-xl">
+          <img src={lp.thumbnail} alt={lp.title} className="rounded-lg shadow mx-auto" />
+        </div>
+      </div>
+
+      <p className="ml-10 mr-10 leading-7 whitespace-pre-line text-zinc-200">{lp.content}</p>
+
+      <div className="flex flex-wrap gap-2">
+        {lp.tags?.map((t) => (
+          <span key={t.id} className="px-3 py-1 rounded-full bg-zinc-700 text-zinc-200 text-sm">
+            #{t.name}
+          </span>
+        ))}
+      </div>
+
+      <div className="mt-6 flex items-center justify-center gap-2 text-rose-300">
+        <button
+          onClick={handleLike}
+          disabled={likeMut.isPending}
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-rose-600 hover:bg-rose-700 text-white disabled:opacity-60"
+          aria-label="좋아요"
+        >
+          <svg width="22" height="22" viewBox="0 0 24 24" className="fill-current">
+            <path d="M12.1 21.35 10 19.45C5.4 15.36 2 12.28 2 8.5A4.5 4.5 0 0 1 6.5 4c1.74 0 3.41.81 4.5 2.09A6 6 0 0 1 15.5 4 4.5 4.5 0 0 1 20 8.5c0 3.78-3.4 6.86-8 10.95l-.9.9Z" />
+          </svg>
+          <span className="text-zinc-100">{likeCount}</span>
+        </button>
+      </div>
+
+      <Link to="/" className="mt-6 block cursor:pointer text-blue-700 hover:underline">
+        ← 목록으로
+      </Link>
+    </div>
+  );
+}

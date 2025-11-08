@@ -1,15 +1,30 @@
 import Footer from '../components/Footer.tsx';
 import Navbar from '../components/Navbar.tsx';
 import { useAuth } from '../context/AuthContext.tsx';
-import { Navigate, Outlet } from 'react-router-dom';
+import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import FAB from '../components/FAB.tsx';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Sidebar from '../components/Sidebar.tsx';
+import ConfirmModal from '../components/ComFirmModal.tsx';
 
 const ProtectedLayout = () => {
     const [open, setOpen] = useState(false);
     const { accessToken } = useAuth();
     const handleClose = () => setOpen(false);
+    const location = useLocation();
+    const navigate = useNavigate();
+
+    const needAuthModalOpen = useMemo(() => !accessToken, [accessToken]);
+    
+    const handleConfirm = () => {
+        navigate('/login', {
+        replace: true,
+        state: { from: location }, // 로그인 후 복귀용
+        });
+    };
+    const handleCancel = () => {
+        navigate('/', { replace: true });
+    };
 
     useEffect(() => {
         const mq = window.matchMedia('(max-width: 767.98px)');
@@ -22,10 +37,6 @@ const ProtectedLayout = () => {
         mq.addEventListener('change', onChange);
         return () => mq.removeEventListener('change', onChange);
     }, []);
-
-    if(!accessToken) {
-        return <Navigate to={'/login'} replace />;
-    }
 
     return (
         <div className='min-h-screen flex flex-col'>
@@ -40,16 +51,26 @@ const ProtectedLayout = () => {
                      <Outlet />
                  </main>
                 {open && (
-                <div
-                    className="fixed inset-0 z-30"
-                    onClick={handleClose}
-                    aria-label="사이드바 외부 영역"
-                />
+                    <div
+                        className="fixed inset-0 z-30"
+                        onClick={handleClose}
+                        aria-label="사이드바 외부 영역"
+                    />
                 )}
              </div>
              
             <FAB to="/my" label="마이페이지로 이동" />
             <Footer />
+
+            <ConfirmModal
+                open={needAuthModalOpen}
+                title="로그인이 필요합니다"
+                message="이 페이지는 로그인 후 이용할 수 있습니다. 로그인하시겠어요?"
+                confirmText="로그인"
+                cancelText="홈으로"
+                onConfirm={handleConfirm}
+                onCancel={handleCancel}
+            />
         </div>
     )
 }

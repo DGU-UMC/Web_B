@@ -12,6 +12,7 @@ export type Likes = {
 };
 
 export type Lp = {
+    updatedByName: string;
     id: number;
     title: string;
     content: string;
@@ -25,3 +26,11 @@ export type Lp = {
 };
 
 export type ResponseLpListDto = CursorBasedResponse<Lp[]>;
+
+export type UpdateLpDto = {
+  title?: string;
+  content?: string;
+  thumbnail?: string;
+  tags?: string[];   
+  published?: boolean;
+};

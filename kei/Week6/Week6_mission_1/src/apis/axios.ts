@@ -13,6 +13,12 @@ baseURL: BASE_URL,
 withCredentials: true,
 });
 
+function hadAuthHeader(cfg?: AxiosRequestConfig) {
+  const h = (cfg?.headers ?? {});
+  // axios가 소문자로 정규화하는 경우 대비
+  return Boolean(h.Authorization || h.authorization);
+}
+
 axiosInstance.interceptors.request.use((config: InternalAxiosRequestConfig) => {
 if (!(config.headers instanceof AxiosHeaders)) {
   config.headers = new AxiosHeaders(config.headers);
@@ -59,11 +65,15 @@ async (error: AxiosError) => { // API 응답이 실패일 때
     url.includes("/v1/auth/signout") ||
     url.includes("/v1/auth/refresh");
 
+  // 401이 아니거나, 인증 엔드포인트면 건드리지 않음
   if (status !== 401 || isAuthPath) {
     return Promise.reject(error);
   }
 
+  // refresh 루프 방지
   if (originalRequest._retry) {
+    // 이미 토큰 재발급을 시도한 요청이라면 여기서 중단한다.
+    // 권한 부족 등으로 인한 401까지 모두 로그아웃으로 연결되는 것을 막기 위함.
     return Promise.reject(error);
   }
   originalRequest._retry = true;
@@ -71,8 +81,11 @@ async (error: AxiosError) => { // API 응답이 실패일 때
   const rawRt = localStorage.getItem(LOCAL_STORAGE_KEY.refreshToken);
   const refreshToken = rawRt?.replace(/^"|"$/g, "");
 
+  // refreshToken이 없으면:
+  // - 원 요청에 Authorization 있었으면 사용자는 로그인한 상태였다고 간주 → 정리 + 리다이렉트
+  // - 없었으면(게스트 요청) → 리다이렉트 하지 말고 그냥 reject (모달이 처리)
   if (!refreshToken) {
-    clearTokensAndRedirect();
+    clearTokensAndMaybeRedirect(hadAuthHeader(originalRequest));
     return Promise.reject(error);
   }
 
@@ -95,7 +108,8 @@ async (error: AxiosError) => { // API 응답이 실패일 때
   try {
     const { data } = await refreshClient.post<{ accessToken: string; refreshToken?: string }>(
       "/v1/auth/refresh",
-      { refreshToken }
+      { refreshToken },
+      { withCredentials: true },
     );
 
     const newAccess = data?.accessToken;
@@ -114,7 +128,7 @@ async (error: AxiosError) => { // API 응답이 실패일 때
 
     return axiosInstance(originalRequest);
   } catch (e) {
-    clearTokensAndRedirect();
+    clearTokensAndMaybeRedirect(true);
     return Promise.reject(e);
    } finally {
     isRefreshing = false;
@@ -122,10 +136,10 @@ async (error: AxiosError) => { // API 응답이 실패일 때
 }
 );
 
-function clearTokensAndRedirect() {
-localStorage.removeItem(LOCAL_STORAGE_KEY.accessToken);
-localStorage.removeItem(LOCAL_STORAGE_KEY.refreshToken);
-if (window.location.pathname !== "/login") {
-  window.location.href = "/login";
-}
+function clearTokensAndMaybeRedirect(shouldRedirect: boolean) {
+  localStorage.removeItem(LOCAL_STORAGE_KEY.accessToken);
+  localStorage.removeItem(LOCAL_STORAGE_KEY.refreshToken);
+  if (shouldRedirect && window.location.pathname !== "/login") {
+    window.location.href = "/login";
+  }
 }

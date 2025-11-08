@@ -1,18 +1,16 @@
 import { type UserSigninInformation, validateSignin } from '../utils/validate';
 import useForm from '../hooks/useForm';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useEffect } from 'react';
 
 const LoginPage = () => {
+    const location = useLocation();
     const { login, accessToken } = useAuth();
     const navigate = useNavigate();
 
-    useEffect(() => {
-        if (accessToken) {
-            navigate('/');
-        }
-    }, [navigate, accessToken]);
+    // 보호 라우트(모달)에서 넘겨준 직전 경로. 없으면 홈으로
+    const from = (location.state)?.from?.pathname || '/';
 
     const { values, errors, touched, getInputProps } = useForm<UserSigninInformation>({
         initialValue: {
@@ -22,8 +20,16 @@ const LoginPage = () => {
         validate: validateSignin,
     });
 
+    // 이미 로그인 상태로 진입했다면 원래 가려던 곳으로 즉시 복귀
+    useEffect(() => {
+        if (accessToken) {
+        navigate(from, { replace: true });
+        }
+    }, [accessToken, from, navigate]);
+
     const handleSubmit = async () => {
         await login(values);
+        navigate(from, { replace: true }); // 직전 경로로 복귀
     }
 
     const handleGoogleLogin = () => {

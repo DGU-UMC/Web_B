@@ -12,6 +12,7 @@ import GoogleLoginRedirectPage from './pages/GoogleLoginRedirectPage';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 //import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import './App.css';
+import LpEditPage from './pages/LpEditPage';
 
 // publicRoutes : 인증 없이 접근 가능한 라우트
 const publicRoutes: RouteObject[] = [
@@ -36,10 +37,8 @@ const protectedRoutes: RouteObject[] = [
     element: <ProtectedLayout />,
     errorElement: <NotFoundPage />,
     children: [
-      {
-        path: "my",
-        element: <MyPage />,
-      },
+      { path: "my", element: <MyPage />, },
+      { path: "lp/:lpid/edit", element: <LpEditPage /> },
     ],
   },
 ];
