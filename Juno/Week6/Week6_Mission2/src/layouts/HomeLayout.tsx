@@ -8,7 +8,7 @@ const HomeLayout = () => {
   const { isOpen, toggle, close } = useNavbar();
 
   return (
-    <div className="h-dvh w-full flex flex-col bg-gray-50">
+    <div className="h-full w-full flex flex-col bg-gray-50">
       <Header toggleNavbar={toggle} />
       <div className="flex flex-1">
         <Navbar isOpen={isOpen} onClose={close} />

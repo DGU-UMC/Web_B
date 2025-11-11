@@ -16,7 +16,7 @@ function HomePage() {
     isPending,
     isError,
     fetchNextPage,
-  } = useGetInfiniteLpList(10, search, sort);
+  } = useGetInfiniteLpList(15, search, sort);
 
   // ref: 특정 HTML 요소를 감시한다.
   // inView: 감시하는 요소가 화면에 보이면 true, 안 보이면 false
@@ -62,7 +62,7 @@ function HomePage() {
             ?.map((lp) => (
               <LpCard key={lp.id} lp={lp} />
             ))}
-          {isFetching && <LpCardSkeletonList count={10} />}
+          {isFetching && <LpCardSkeletonList count={15} />}
         </div>
       </div>
       <div ref={ref} className="h-2"></div>
