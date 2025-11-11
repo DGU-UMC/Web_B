@@ -12,6 +12,7 @@ import type { RequestSigninDto } from "../types/auth";
 interface AuthContextType {
   accessToken: string | null;
   refreshToken: string | null;
+  userName: string | null;
   login: (signInData: RequestSigninDto) => Promise<void>;
   logout: () => Promise<void>;
 }
@@ -19,6 +20,7 @@ interface AuthContextType {
 export const AuthContext = createContext<AuthContextType>({
   accessToken: null,
   refreshToken: null,
+  userName: null,
   login: async () => {},
   logout: async () => {},
 });
@@ -36,24 +38,33 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
     removeItem: removeRefreshTokenFromStorage,
   } = useLocalStorage(LOCAL_STORAGE_KEY.refreshToken);
 
+  const {
+    getItem: getUserNameFromStorage,
+    setItem: setUserNameInStorage,
+    removeItem: removeUserNameFromStorage,
+  } = useLocalStorage(LOCAL_STORAGE_KEY.userName);
+
   const [accessToken, setAccessToken] = useState<string | null>(
     getAccessTokenFromStorage()
   );
   const [refreshToken, setRefreshToken] = useState<string | null>(
     getRefreshTokenFromStorage()
   );
+  const [userName, setUserName] = useState<string | null>(
+    getUserNameFromStorage()
+  );
 
   const login = async (signInData: RequestSigninDto) => {
     try {
       const { data } = await postSignin(signInData);
-      localStorage.setItem(LOCAL_STORAGE_KEY.accessToken, data.accessToken);
-      localStorage.setItem(LOCAL_STORAGE_KEY.refreshToken, data.refreshToken);
 
       if (data) {
         setAccessTokenInStorage(data.accessToken);
         setRefreshTokenInStorage(data.refreshToken);
+        setUserNameInStorage(data.name);
         setAccessToken(data.accessToken);
         setRefreshToken(data.refreshToken);
+        setUserName(data.name);
         alert("로그인에 성공했습니다.");
         window.location.replace("/mypage");
       }
@@ -68,8 +79,10 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
       await postLogout();
       removeAccessTokenFromStorage();
       removeRefreshTokenFromStorage();
+      removeUserNameFromStorage();
       setAccessToken(null);
       setRefreshToken(null);
+      setUserName(null);
       alert("로그아웃 되었습니다.");
     } catch (error) {
       console.error("로그아웃 오류", error);
@@ -78,7 +91,9 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
   };
 
   return (
-    <AuthContext.Provider value={{ accessToken, refreshToken, login, logout }}>
+    <AuthContext.Provider
+      value={{ accessToken, refreshToken, userName, login, logout }}
+    >
       {children}
     </AuthContext.Provider>
   );

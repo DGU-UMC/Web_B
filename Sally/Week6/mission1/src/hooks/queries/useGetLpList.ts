@@ -4,8 +4,10 @@ import { QUERY_KEY } from "../../constants/key";
 import { getLpList } from "../../apis/lp";
 
 function useGetLpList(params: PaginationDto) {
+  const sort = params.order || null;
+  
   return useQuery({
-    queryKey: [QUERY_KEY.lps, params],
+    queryKey: [QUERY_KEY.lps, sort, params],
     queryFn: () => getLpList(params),
 
     // 데이터가 신선하다고 간주하는 시간

@@ -9,18 +9,21 @@ const GoogleLogin = () => {
   const { setItem: setRefreshToken } = useLocalStorage(
     LOCAL_STORAGE_KEY.refreshToken
   );
+  const { setItem: setUserName } = useLocalStorage(LOCAL_STORAGE_KEY.userName);
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
-    const accessToken = urlParams.get(LOCAL_STORAGE_KEY.accessToken);
-    const refreshToken = urlParams.get(LOCAL_STORAGE_KEY.refreshToken);
+    const accessToken = urlParams.get("accessToken");
+    const refreshToken = urlParams.get("refreshToken");
+    const name = urlParams.get("name");
 
-    if (accessToken) {
+    if (accessToken && refreshToken && name) {
       setAccessToken(accessToken);
       setRefreshToken(refreshToken);
+      setUserName(name);
       window.location.href = "/mypage";
     }
-  }, [setAccessToken, setRefreshToken]);
+  }, [setAccessToken, setRefreshToken, setUserName]);
 
   return <div>구글 로그인</div>;
 };

@@ -1,8 +1,15 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import useGetLpList from "../hooks/queries/useGetLpList";
+import { PAGINATION_ORDER } from "../enum/common";
 
 const Home = () => {
-  const { data, isLoading, isError } = useGetLpList({});
+  const [sortOrder, setSortOrder] = useState<PAGINATION_ORDER>(
+    PAGINATION_ORDER.desc
+  );
+  const { data, isLoading, isError } = useGetLpList({
+    order: sortOrder,
+  });
 
   if (isLoading) {
     return <div className="text-center p-4">Loading...</div>;
@@ -17,28 +24,51 @@ const Home = () => {
   const lps = data?.data.data;
 
   return (
-    <div className="p-4">
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+    <div className="p-4 relative">
+      <div className="flex justify-end mb-4">
+        <div className="inline-flex rounded-lg border border-gray-300 overflow-hidden bg-white shadow-sm">
+          <button
+            onClick={() => setSortOrder(PAGINATION_ORDER.asc)}
+            className={`px-4 py-2 text-sm font-medium transition-colors ${
+              sortOrder === PAGINATION_ORDER.asc
+                ? "bg-black text-white"
+                : "bg-white text-gray-700 hover:bg-gray-50"
+            }`}
+          >
+            오래된순
+          </button>
+          <button
+            onClick={() => setSortOrder(PAGINATION_ORDER.desc)}
+            className={`px-4 py-2 text-sm font-medium transition-colors ${
+              sortOrder === PAGINATION_ORDER.desc
+                ? "bg-black text-white"
+                : "bg-white text-gray-700 hover:bg-gray-50"
+            }`}
+          >
+            최신순
+          </button>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
         {lps && lps.length > 0 ? (
           lps.map((lp) => (
-            <div
+            <Link
               key={lp.id}
-              className="border rounded-lg overflow-hidden shadow-lg"
+              to={`/lp/${lp.id}`}
+              className="group relative aspect-square overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300"
             >
-              <Link to={`/lp/${lp.id}`}>
-                <img
-                  src={lp.thumbnail || "https://via.placeholder.com/150"}
-                  alt={lp.title}
-                  className="w-full h-48 object-cover"
-                />
-                <div className="p-4">
-                  <h2 className="font-bold text-lg">{lp.title}</h2>
-                </div>
-              </Link>
-            </div>
+              <img
+                src={lp.thumbnail || "https://via.placeholder.com/150"}
+                alt={lp.title}
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+              />
+            </Link>
           ))
         ) : (
-          <div className="col-span-full text-center">No LPs found.</div>
+          <div className="col-span-full text-center py-8 text-gray-500">
+            No LPs found
+          </div>
         )}
       </div>
     </div>
