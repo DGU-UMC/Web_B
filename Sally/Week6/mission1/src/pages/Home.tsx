@@ -7,7 +7,14 @@ const Home = () => {
   const [sortOrder, setSortOrder] = useState<PAGINATION_ORDER>(
     PAGINATION_ORDER.desc
   );
-  const { data, isLoading, isError } = useGetLpList({
+  const {
+    data,
+    isLoading,
+    isError,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useGetLpList({
     order: sortOrder,
   });
 
@@ -21,7 +28,8 @@ const Home = () => {
     );
   }
 
-  const lps = data?.data.data;
+  // 모든 페이지의 데이터를 평탄화
+  const lps = data?.pages.flatMap((page) => page.data.data) || [];
 
   return (
     <div className="p-4 relative">
@@ -51,7 +59,7 @@ const Home = () => {
       </div>
 
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
-        {lps && lps.length > 0 ? (
+        {lps.length > 0 ? (
           lps.map((lp) => (
             <Link
               key={lp.id}
@@ -71,6 +79,19 @@ const Home = () => {
           </div>
         )}
       </div>
+
+      {/* 더 보기 버튼 */}
+      {hasNextPage && (
+        <div className="flex justify-center mt-8">
+          <button
+            onClick={() => fetchNextPage()}
+            disabled={isFetchingNextPage}
+            className="px-6 py-3 bg-gray-800 text-white rounded-lg hover:bg-gray-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {isFetchingNextPage ? "Loading..." : "더 보기"}
+          </button>
+        </div>
+      )}
     </div>
   );
 };

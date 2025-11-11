@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { getMyInfo } from "../apis/auth";
-import type { ResponseMyInfoDTO } from "../types/auth";
 
 const Navbar = () => {
   const { accessToken, logout } = useAuth();

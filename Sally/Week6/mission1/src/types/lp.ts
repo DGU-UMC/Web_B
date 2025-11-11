@@ -51,3 +51,23 @@ export type ResponseLpListDto = CusorBasedResponse<{
 }>;
 
 export type ResponseLpDetailDto = CommonResponse<LpDetailData>;
+
+export type Comment = {
+  id: number;
+  content: string;
+  lpId: number;
+  userId: number;
+  createdAt: string;
+  updatedAt: string;
+  author: Author;
+};
+
+export type ResponseCommentListDto = CusorBasedResponse<{
+  data: Comment[];
+}>;
+
+export type RequestCreateCommentDto = {
+  content: string;
+};
+
+export type ResponseCreateCommentDto = CommonResponse<Comment>;
