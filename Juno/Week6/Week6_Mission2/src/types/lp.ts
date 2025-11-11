@@ -49,3 +49,22 @@ export type ResponseLpDetailDto = commonResponse<{
   likes: Likes[];
   author: Author;
 }>;
+
+export type RequestLpCommentsDto = {
+  lpId: string;
+  cursor?: number;
+  limit?: number;
+  order?: string;
+};
+
+export type Comment = {
+  id: number;
+  content: string;
+  lpId: number;
+  authorId: number;
+  createdAt: string;
+  updatedAt: string;
+  author: Author;
+};
+
+export type ResponseLpCommentsDto = CursorBasedResponse<Comment[]>;

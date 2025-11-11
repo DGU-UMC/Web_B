@@ -10,7 +10,7 @@ function MyPage() {
   };
 
   return (
-    <div className="mt-10 ml-5">
+    <div className="mt-5 ml-5">
       <h1>My Page</h1>
       <button className="px-5 py-3 bg-blue-300" onClick={handleLogout}>
         로그아웃

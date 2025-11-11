@@ -1,25 +1,108 @@
 import { useParams } from "react-router-dom";
 import useGetLpDetail from "../hooks/queries/useGetLpDetail";
+import useGetInfiniteComments from "../hooks/queries/useGetInfiniteComments";
+import { useEffect, useState } from "react";
+import { PAGINATION_ORDER } from "../enums/common";
+import { useInView } from "react-intersection-observer";
+import Comment from "../components/Comment/Comment";
+import CommentSkeletonList from "../components/Comment/CommentSkeletonList";
 
 const LpDetailPage = () => {
+  const [sort, setSort] = useState<PAGINATION_ORDER>(PAGINATION_ORDER.desc);
+  const [comment, setComment] = useState("");
   const { lpid } = useParams();
 
-  const { data, isPending, isError } = useGetLpDetail(lpid);
+  const {
+    data: detailData,
+    isPending: isDetailPending,
+    isError: isDetailError,
+  } = useGetLpDetail(lpid as string);
 
-  if (isPending) {
+  const {
+    data: commentsData,
+    isPending: isCommentsPending,
+    isError: isCommentsError,
+    isFetching,
+    hasNextPage,
+    fetchNextPage,
+  } = useGetInfiniteComments(lpid as string, 10, sort);
+
+  const { ref, inView } = useInView({ threshold: 0 });
+
+  useEffect(() => {
+    if (inView && !isFetching && hasNextPage) {
+      fetchNextPage();
+    }
+  }, [inView, isFetching, hasNextPage, fetchNextPage]);
+
+  if (isDetailPending || isCommentsPending) {
     return <div className="mt-15">Loading...</div>;
   }
 
-  if (isError) {
+  if (isDetailError || isCommentsError) {
     return <div className="mt-15">Error!</div>;
   }
+
   return (
-    <div>
-      <img src={data.thumnail} alt={`${data.title}의 썸네일`} />
-      <h1>{data.title}</h1>
-      <p>{data.createdAt.slice(0, 10)}</p>
-      <p>{data.content}</p>
-    </div>
+    <>
+      <div>
+        <img src={detailData.thumnail} alt={`${detailData.title}의 썸네일`} />
+        <h1>{detailData.title}</h1>
+        <p>{detailData.createdAt.slice(0, 10)}</p>
+        <p>{detailData.content}</p>
+      </div>
+      <div className="w-full h-px bg-black my-10"></div>
+      <div className="flex flex-col space-y-2">
+        <h1 className="font-extrabold text-xl">댓글</h1>
+        <div className="space-x-2">
+          <button
+            disabled={sort === PAGINATION_ORDER.desc}
+            className="cursor-pointer px-4 py-2 border border-black rounded-xl disabled:bg-gray-900 disabled:text-gray-100"
+            onClick={() => setSort(PAGINATION_ORDER.desc)}
+          >
+            최신순
+          </button>
+          <button
+            disabled={sort === PAGINATION_ORDER.asc}
+            className="cursor-pointer px-4 py-2 border border-black rounded-xl disabled:bg-gray-900 disabled:text-gray-100"
+            onClick={() => setSort(PAGINATION_ORDER.asc)}
+          >
+            오래된순
+          </button>
+        </div>
+        <form className="space-x-2">
+          <input
+            type="text"
+            name="comment"
+            value={comment}
+            onChange={(e) => setComment(e.target.value)}
+            className="pl-4 pr-8 py-2 border border-gray-950 rounded-xl"
+            placeholder="댓글을 입력해주세요."
+          />
+          <button
+            type="submit"
+            className="cursor-pointer px-4 py-2 bg-gray-950 text-gray-50 rounded-xl disabled:bg-gray-400 disabled:cursor-not-allowed"
+            disabled={comment.length === 0}
+          >
+            작성
+          </button>
+        </form>
+        <div className="flex flex-col space-y-2">
+          {commentsData.pages
+            .map((page) => page.data.data)
+            .flat()
+            .map((comment) => (
+              <Comment
+                key={comment.id}
+                nickname={comment.author.name}
+                content={comment.content}
+              />
+            ))}
+          {isFetching && <CommentSkeletonList count={10} />}
+        </div>
+      </div>
+      <div ref={ref} className="h-2"></div>
+    </>
   );
 };
 

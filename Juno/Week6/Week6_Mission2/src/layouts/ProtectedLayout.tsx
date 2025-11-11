@@ -17,7 +17,7 @@ function ProtectedLayout() {
   }
 
   return (
-    <div className="h-full w-full flex flex-col bg-gray-50">
+    <div className="min-h-screen w-full flex flex-col bg-gray-50">
       <Header toggleNavbar={toggle} />
       <div className="flex flex-1">
         <Navbar isOpen={isOpen} onClose={close} />

@@ -37,7 +37,7 @@ function HomePage() {
   }
 
   return (
-    <div className="p-6">
+    <>
       <div className="space-x-2">
         <button
           disabled={sort === PAGINATION_ORDER.desc}
@@ -66,7 +66,7 @@ function HomePage() {
         </div>
       </div>
       <div ref={ref} className="h-2"></div>
-    </div>
+    </>
   );
 }
 
