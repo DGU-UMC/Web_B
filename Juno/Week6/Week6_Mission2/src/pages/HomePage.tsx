@@ -23,8 +23,8 @@ function HomePage() {
   const { ref, inView } = useInView({ threshold: 0 });
 
   useEffect(() => {
-    if (inView) {
-      !isFetching && hasNextPage && fetchNextPage();
+    if (inView && !isFetching && hasNextPage) {
+      fetchNextPage();
     }
   }, [inView, isFetching, hasNextPage, fetchNextPage]);
 
@@ -55,7 +55,7 @@ function HomePage() {
         </button>
       </div>
       <div className="flex w-full justify-center">
-        <div className="mt-2 grid gap-16 grid-cols-4">
+        <div className="mt-2 grid gap-16 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
           {lps?.pages
             ?.map((page) => page.data.data)
             ?.flat() // [[1, 2], [3, 4]].flat() -> [1, 2, 3, 4]
