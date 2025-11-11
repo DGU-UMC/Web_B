@@ -20,7 +20,7 @@ function useGetLpList(params: PaginationDto) {
     gcTime: 1000 * 60 * 10,
 
     // 조건에 따라 쿼리를 실행 여부 제어
-    // enabled: Boolean(serch)
+    // enabled: Boolean(search)
     // refetchinterval: 1000 * 60,
 
     // retry: 쿼리 요청이 실패했을 때 자동으로 재시도하는 횟수 설정
