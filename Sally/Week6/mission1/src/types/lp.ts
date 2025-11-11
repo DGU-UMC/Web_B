@@ -71,3 +71,13 @@ export type RequestCreateCommentDto = {
 };
 
 export type ResponseCreateCommentDto = CommonResponse<Comment>;
+
+export type RequestCreateLpDto = {
+  title: string;
+  content: string;
+  thumbnail?: File | string; // File 객체 또는 URL 문자열
+  tags?: string[]; // 태그 배열
+  published?: boolean;
+};
+
+export type ResponseCreateLpDto = CommonResponse<LpDetailData>;

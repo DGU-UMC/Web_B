@@ -2,11 +2,15 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import useGetLpList from "../hooks/queries/useGetLpList";
 import { PAGINATION_ORDER } from "../enum/common";
+import CreateLpModal from "../components/CreateLpModal";
+import { useAuth } from "../context/AuthContext";
 
 const Home = () => {
   const [sortOrder, setSortOrder] = useState<PAGINATION_ORDER>(
     PAGINATION_ORDER.desc
   );
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const { accessToken } = useAuth();
   const {
     data,
     isLoading,
@@ -28,8 +32,13 @@ const Home = () => {
     );
   }
 
-  // 모든 페이지의 데이터를 평탄화
   const lps = data?.pages.flatMap((page) => page.data.data) || [];
+
+  // 디버깅: LP 데이터 확인
+  if (lps.length > 0) {
+    console.log("LP 데이터 샘플:", lps[0]);
+    console.log("썸네일 URL:", lps[0]?.thumbnail);
+  }
 
   return (
     <div className="p-4 relative">
@@ -64,12 +73,19 @@ const Home = () => {
             <Link
               key={lp.id}
               to={`/lp/${lp.id}`}
-              className="group relative aspect-square overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300"
+              className="group relative aspect-square overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 bg-gray-200"
             >
               <img
-                src={lp.thumbnail || "https://via.placeholder.com/150"}
+                src={lp.thumbnail || "https://via.placeholder.com/300"}
                 alt={lp.title}
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                onError={(e) => {
+                  // 이미지 로딩 실패 시 placeholder로 대체
+                  const target = e.target as HTMLImageElement;
+                  if (!target.src.includes("via.placeholder.com")) {
+                    target.src = "https://via.placeholder.com/300";
+                  }
+                }}
               />
             </Link>
           ))
@@ -80,7 +96,6 @@ const Home = () => {
         )}
       </div>
 
-      {/* 더 보기 버튼 */}
       {hasNextPage && (
         <div className="flex justify-center mt-8">
           <button
@@ -92,6 +107,20 @@ const Home = () => {
           </button>
         </div>
       )}
+
+      {accessToken && (
+        <button
+          onClick={() => setIsModalOpen(true)}
+          className="fixed bottom-8 right-8 w-14 h-14 bg-pink-500 text-white rounded-full shadow-lg flex items-center justify-center z-40"
+        >
+          +
+        </button>
+      )}
+
+      <CreateLpModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+      />
     </div>
   );
 };
