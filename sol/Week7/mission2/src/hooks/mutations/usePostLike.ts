@@ -13,7 +13,7 @@ function usePostLike() {
       await queryClient.cancelQueries({
         queryKey: [QUERY_KEY, lp.lpId],
       });
-      // 2. 현재 게시글의 데이ㅓ를 캐시에서 과져와야.
+      // 2. 현재 게시글의 데이터를 캐시에서 가져와야.
       const previousLpPost = queryClient.getQueryData<ResponseLpDto>([
         QUERY_KEY.lps,
         lp.lpId,
