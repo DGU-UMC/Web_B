@@ -2,19 +2,46 @@ import { useParams } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import useGetLpDetail from "../hooks/queries/useGetLpDetail";
 import type { LpDetailData } from "../types/lp";
+import useGetMyInfo from "../hooks/queries/useGetMyInfo";
+import { Heart } from "lucide-react";
+import usePostLike from "../hooks/mutations/usePostLike";
+import useDeleteLike from "../hooks/mutations/useDeleteLike";
 
 const LpDetailPage = () => {
   const { lpId } = useParams<{ lpId: string }>();
   const { accessToken } = useAuth();
 
-  const { data, isPending, isError } = useGetLpDetail(lpId);
+  const { mutate: likeMutate } = usePostLike();
+  const { mutate: disLikeMutate } = useDeleteLike();
+
+  const {
+    data: lp,
+    isPending,
+    isError,
+  } = useGetLpDetail({ lpId: Number(lpId) });
+
+  const { data: me } = useGetMyInfo(accessToken);
+
+  const handleLikeLp = () => {
+    likeMutate({ lpId: Number(lpId) });
+  };
+
+  const isLiked = lp?.data.likes
+    .map((like) => like.userId)
+    .includes(me?.data.id as number);
+
+  const handleDislikeLp = () => {
+    disLikeMutate({ lpId: Number(lpId) });
+  };
 
   const currentUserId = 5;
 
-  if (isPending) return <div className="mt-20">로딩중...</div>;
-  if (isError) return <div className="mt-20">에러 발생!</div>;
+  if (isPending)
+    return <div className="mt-20 text-center items-center">로딩중...</div>;
+  if (isError)
+    return <div className="mt-20 text-center items-center">에러 발생!</div>;
 
-  const lpDetail: LpDetailData = data.data;
+  const lpDetail: LpDetailData = lp.data;
 
   const authorName = lpDetail.author?.name || "알 수 없음";
   const authorId = lpDetail.authorId;
@@ -23,10 +50,10 @@ const LpDetailPage = () => {
 
   const date = new Date(lpDetail.createdAt).toLocaleDateString("ko-KR");
 
-  const userLiked = lpDetail.likes.some(
-    (like) => like.userId === currentUserId
-  );
-  const likeCount = lpDetail.likes.length;
+  // const userLiked = lpDetail.likes.some(
+  //   (like) => like.userId === currentUserId
+  // );
+  // const likeCount = lpDetail.likes.length;
 
   return (
     <div className="mt-20 max-w-4xl mx-auto bg-gray-600 p-8 pt-4 min-h-screen">
@@ -86,15 +113,12 @@ const LpDetailPage = () => {
       </div>
 
       <div className="flex justify-center items-center space-x-3 mt-10">
-        <button
-          onClick={() => console.log("좋아요 클릭")}
-          className={`hover:scale-110 transition duration-150 ${
-            userLiked ? "text-red-500" : "text-gray-400"
-          }`}
-        >
-          좋아요
+        <button onClick={isLiked ? handleDislikeLp : handleLikeLp}>
+          <Heart
+            color={isLiked ? "red" : "black"}
+            fill={isLiked ? "red" : "none"}
+          />
         </button>
-        <span className="text-xl font-bold text-white">{likeCount}</span>
       </div>
     </div>
   );
