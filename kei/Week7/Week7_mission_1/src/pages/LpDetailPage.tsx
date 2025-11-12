@@ -131,7 +131,7 @@ export default function LpDetailPage() {
         published: lp.published ?? true,
       });
       setEditMode(false);
-    } catch (e: Error) {
+    } catch (e: any) {
       const msg = e?.response?.data?.message || "저장에 실패했습니다.";
       alert(msg); 
     }

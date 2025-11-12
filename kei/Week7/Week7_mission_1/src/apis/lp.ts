@@ -25,7 +25,7 @@ export const getLpById = async (id: string): Promise<Lp> => {
 }
 
 export async function patchLp (lpId: number, body: UpdateOrCreateLpDto) {
-    const { data } = await axiosInstance.patch(`/v1/lps/${lpId}`, { body });
+    const { data } = await axiosInstance.patch(`/v1/lps/${lpId}`, body);
 
     return data.data;
 }
