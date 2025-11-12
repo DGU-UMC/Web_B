@@ -91,3 +91,17 @@ export type RequestCreateLpDto = {
 };
 
 export type ResponseCreateLpDto = CommonResponse<LpDetailData>;
+
+export type RequestUpdateLpDto = {
+  title?: string;
+  content?: string;
+  thumbnail?: string | null;
+  tags?: string[];
+  published?: boolean;
+};
+
+export type ResponseUpdateLpDto = CommonResponse<LpDetailData>;
+
+export type ResponseDeleteLpDto = CommonResponse<{
+  id: number;
+}>;

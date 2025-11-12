@@ -1,15 +1,18 @@
 import { useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import useGetLpDetail from "../hooks/queries/useGetLpDetail";
 import useGetLpComments from "../hooks/queries/useGetLpComments";
 import useCreateLpComment from "../hooks/mutations/useCreateLpComment";
 import useUpdateLpComment from "../hooks/mutations/useUpdateLpComment";
 import useDeleteLpComment from "../hooks/mutations/useDeleteLpComment";
+import useUpdateLp from "../hooks/mutations/useUpdateLp";
+import useDeleteLp from "../hooks/mutations/useDeleteLp";
 import { useAuth } from "../context/AuthContext";
 import { PAGINATION_ORDER } from "../enum/common";
 
 const LpDetail = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const { data, isLoading, isError } = useGetLpDetail(id);
   const { accessToken, userId } = useAuth();
   const [commentOrder, setCommentOrder] = useState<PAGINATION_ORDER>(
@@ -29,6 +32,14 @@ const LpDetail = () => {
     useUpdateLpComment(id);
   const { mutateAsync: deleteCommentMutate, isPending: isDeletingComment } =
     useDeleteLpComment(id);
+  const { mutateAsync: updateLpMutate, isPending: isUpdatingLp } =
+    useUpdateLp(id);
+  const { mutateAsync: deleteLpMutate, isPending: isDeletingLp } =
+    useDeleteLp(id);
+  const [isEditingLp, setIsEditingLp] = useState(false);
+  const [lpTitleInput, setLpTitleInput] = useState("");
+  const [lpContentInput, setLpContentInput] = useState("");
+  const [lpEditError, setLpEditError] = useState("");
 
   const {
     data: commentsData,
@@ -67,6 +78,43 @@ const LpDetail = () => {
   });
   const commentList =
     commentsData?.pages.flatMap((page) => page.data.data) ?? [];
+
+  const handleStartLpEdit = () => {
+    if (!lp) return;
+    setLpTitleInput(lp.title);
+    setLpContentInput(lp.content);
+    setLpEditError("");
+    setIsEditingLp(true);
+  };
+
+  const handleCancelLpEdit = () => {
+    setIsEditingLp(false);
+    setLpEditError("");
+  };
+
+  const handleSubmitLpEdit = async () => {
+    if (!lpTitleInput.trim()) {
+      setLpEditError("LP 제목을 입력해주세요.");
+      return;
+    }
+
+    if (!lpContentInput.trim()) {
+      setLpEditError("LP 내용을 입력해주세요.");
+      return;
+    }
+
+    try {
+      await updateLpMutate({
+        title: lpTitleInput.trim(),
+        content: lpContentInput.trim(),
+        published: lp.published,
+      });
+      setIsEditingLp(false);
+      setLpEditError("");
+    } catch {
+      setLpEditError("LP 수정에 실패했습니다.");
+    }
+  };
 
   const handleStartEdit = (commentId: number, content: string) => {
     setEditingCommentId(commentId);
@@ -114,11 +162,38 @@ const LpDetail = () => {
     }
   };
 
+  const handleDeleteLp = async () => {
+    const shouldDelete = window.confirm("LP를 삭제하시겠습니까?");
+    if (!shouldDelete) {
+      return;
+    }
+
+    try {
+      await deleteLpMutate();
+      navigate("/");
+    } catch {
+      alert("LP 삭제에 실패했습니다.");
+    }
+  };
+
   return (
     <div className="max-w-4xl mx-auto p-4 md:p-8">
       <div className="mb-6">
-        <h1 className="text-3xl md:text-4xl font-bold mb-4">{lp.title}</h1>
-        <div className="flex items-center gap-4 text-gray-600 text-sm">
+        {isEditingLp ? (
+          <input
+            value={lpTitleInput}
+            onChange={(event) => {
+              setLpTitleInput(event.target.value);
+              setLpEditError("");
+            }}
+            className="w-full rounded-lg border border-gray-300 px-4 py-3 text-3xl font-bold focus:outline-none focus:ring-2 focus:ring-blue-500 md:text-4xl"
+            placeholder="LP 제목을 입력하세요"
+            maxLength={200}
+          />
+        ) : (
+          <h1 className="text-3xl md:text-4xl font-bold mb-4">{lp.title}</h1>
+        )}
+        <div className="flex items-center gap-4 text-gray-600 text-sm mt-4 md:mt-2">
           <span>업로드일: {uploadDate}</span>
           <span>좋아요: {likeCount}</span>
         </div>
@@ -135,25 +210,75 @@ const LpDetail = () => {
       )}
 
       <div className="mb-6">
-        <div className="prose max-w-none">
-          <div className="whitespace-pre-wrap text-gray-800 leading-relaxed">
-            {lp.content}
+        {isEditingLp ? (
+          <div className="flex flex-col gap-3">
+            <textarea
+              value={lpContentInput}
+              onChange={(event) => {
+                setLpContentInput(event.target.value);
+                setLpEditError("");
+              }}
+              rows={12}
+              className="w-full rounded-lg border border-gray-300 p-4 leading-relaxed focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="LP 내용을 입력하세요"
+            />
+            {lpEditError && (
+              <p className="text-sm text-red-500">{lpEditError}</p>
+            )}
           </div>
-        </div>
+        ) : (
+          <div className="prose max-w-none">
+            <div className="whitespace-pre-wrap text-gray-800 leading-relaxed">
+              {lp.content}
+            </div>
+          </div>
+        )}
       </div>
 
       <div className="flex flex-wrap gap-3 mb-8">
-        {isAuthor && (
-          <>
-            <button className="px-4 py-2 bg-blue-500 text-white rounded-lg ">
-              수정
-            </button>
-            <button className="px-4 py-2 bg-red-500 text-white rounded-lg">
-              삭제
-            </button>
-          </>
-        )}
-        <button className="px-4 py-2 bg-pink-500 text-white rounded-lg flex items-center gap-2">
+        {isAuthor &&
+          (isEditingLp ? (
+            <>
+              <button
+                type="button"
+                onClick={handleCancelLpEdit}
+                className="px-4 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100 transition-colors"
+                disabled={isUpdatingLp}
+              >
+                취소
+              </button>
+              <button
+                type="button"
+                onClick={handleSubmitLpEdit}
+                disabled={isUpdatingLp}
+                className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {isUpdatingLp ? "저장 중..." : "저장"}
+              </button>
+            </>
+          ) : (
+            <>
+              <button
+                type="button"
+                onClick={handleStartLpEdit}
+                className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+              >
+                수정
+              </button>
+              <button
+                type="button"
+                onClick={handleDeleteLp}
+                disabled={isDeletingLp}
+                className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {isDeletingLp ? "삭제 중..." : "삭제"}
+              </button>
+            </>
+          ))}
+        <button
+          type="button"
+          className="px-4 py-2 bg-pink-500 text-white rounded-lg flex items-center gap-2"
+        >
           좋아요
         </button>
       </div>

@@ -7,6 +7,9 @@ import type {
   ResponseCreateCommentDto,
   RequestCreateLpDto,
   ResponseCreateLpDto,
+  RequestUpdateLpDto,
+  ResponseUpdateLpDto,
+  ResponseDeleteLpDto,
   RequestUpdateCommentDto,
   ResponseUpdateCommentDto,
   ResponseDeleteCommentDto,
@@ -137,5 +140,45 @@ export const createLp = async (
   }
 
   const { data } = await axiosInstance.post("/v1/lps", requestBody);
+  return data;
+};
+
+export const updateLp = async (
+  lpId: string,
+  lpData: RequestUpdateLpDto
+): Promise<ResponseUpdateLpDto> => {
+  const requestBody: RequestUpdateLpDto = {};
+
+  if (typeof lpData.title === "string") {
+    requestBody.title = lpData.title;
+  }
+
+  if (typeof lpData.content === "string") {
+    requestBody.content = lpData.content;
+  }
+
+  if (lpData.thumbnail !== undefined) {
+    requestBody.thumbnail = lpData.thumbnail;
+  }
+
+  if (Array.isArray(lpData.tags)) {
+    requestBody.tags = lpData.tags;
+  }
+
+  if (typeof lpData.published === "boolean") {
+    requestBody.published = lpData.published;
+  }
+
+  const { data } = await axiosInstance.patch(
+    `/v1/lps/${lpId}`,
+    requestBody
+  );
+
+  return data;
+};
+
+export const deleteLp = async (lpId: string): Promise<ResponseDeleteLpDto> => {
+  const { data } = await axiosInstance.delete(`/v1/lps/${lpId}`);
+
   return data;
 };
