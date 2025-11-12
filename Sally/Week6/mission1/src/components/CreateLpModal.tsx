@@ -197,7 +197,6 @@ const CreateLpModal = ({ isOpen, onClose }: CreateLpModalProps) => {
         ref={modalRef}
         className="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto m-4"
       >
-        {/* 헤더 */}
         <div className="flex items-center justify-between p-6 border-b border-gray-200">
           <h2 className="text-2xl font-bold">새 LP 작성</h2>
           <button
