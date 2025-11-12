@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-const useNavbar = () => {
+const useToggle = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   const toggle = () => {
@@ -18,4 +18,4 @@ const useNavbar = () => {
   return { isOpen, toggle, open, close };
 };
 
-export default useNavbar;
+export default useToggle;

@@ -34,6 +34,7 @@ const Navbar = ({ isOpen, onClose }: NavbarProps) => {
   }, [isOpen]);
 
   return (
+    // TODO: 사이드바 안쪽을 눌러도 사이드바가 닫히는 문제 해결하기
     <div
       className={`fixed inset-0 bg-black/50 backdrop-blur-sm transition-opacity duration-300 z-30 ${
         isOpen ? "opacity-100" : "opacity-0 pointer-events-none"

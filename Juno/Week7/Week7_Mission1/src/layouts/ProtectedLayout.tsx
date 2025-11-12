@@ -2,11 +2,11 @@ import { Navigate, Outlet } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import Header from "../components/Header";
 import Navbar from "../components/Navbar";
-import FloatingButton from "../components/FloatingButton";
-import useNavbar from "../hooks/useNavbar";
+import FloatingModalButton from "../components/FloatingLpModalButton";
+import useToggle from "../hooks/useToggle";
 
 function ProtectedLayout() {
-  const { isOpen, toggle, close } = useNavbar();
+  const { isOpen, toggle, close } = useToggle();
 
   const { accessToken } = useAuth();
 
@@ -23,7 +23,7 @@ function ProtectedLayout() {
         <Navbar isOpen={isOpen} onClose={close} />
         <main className="relative flex-1 mt-15">
           <Outlet />
-          <FloatingButton />
+          <FloatingModalButton />
         </main>
       </div>
     </div>
