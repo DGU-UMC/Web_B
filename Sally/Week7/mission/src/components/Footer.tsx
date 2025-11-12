@@ -9,7 +9,7 @@ const Footer = () => {
           reserved
         </p>
         <div className={"flex justify-center space-x-4 mt-4"}>
-          <Link to={"#"}>Privacy Pollcy</Link>
+          <Link to={"#"}>Privacy Policy</Link>
           <Link to={"#"}>Terms of Service</Link>
           <Link to={"#"}>Contact</Link>
         </div>

@@ -16,7 +16,10 @@ interface AuthContextType {
   userId: number | null;
   login: (signInData: RequestSigninDto) => Promise<void>;
   logout: () => Promise<void>;
-  updateUserInfo: (params: { name?: string | null; userId?: number | null }) => void;
+  updateUserInfo: (params: {
+    name?: string | null;
+    userId?: number | null;
+  }) => void;
 }
 
 export const AuthContext = createContext<AuthContextType>({
@@ -62,9 +65,7 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
   const [userName, setUserName] = useState<string | null>(
     getUserNameFromStorage()
   );
-  const [userId, setUserId] = useState<number | null>(
-    getUserIdFromStorage()
-  );
+  const [userId, setUserId] = useState<number | null>(getUserIdFromStorage());
 
   const login = async (signInData: RequestSigninDto) => {
     try {
@@ -114,22 +115,22 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
     userId?: number | null;
   }) => {
     if (name !== undefined) {
-      if (name) {
-        setUserNameInStorage(name);
-        setUserName(name);
-      } else {
+      if (name === null) {
         removeUserNameFromStorage();
         setUserName(null);
+      } else {
+        setUserNameInStorage(name); // ''(빈 문자열)도 의도면 그대로 저장
+        setUserName(name);
       }
     }
 
     if (nextUserId !== undefined) {
-      if (nextUserId !== null) {
-        setUserIdInStorage(nextUserId);
-        setUserId(nextUserId);
-      } else {
+      if (nextUserId === null) {
         removeUserIdFromStorage();
         setUserId(null);
+      } else {
+        setUserIdInStorage(nextUserId);
+        setUserId(nextUserId);
       }
     }
   };

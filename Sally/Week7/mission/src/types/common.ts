@@ -7,7 +7,7 @@ export type CommonResponse<T> = {
   data: T;
 };
 
-export type CusorBasedResponse<T> = {
+export type CursorBasedResponse<T> = {
   status: boolean;
   statusCode: number;
   message: string;

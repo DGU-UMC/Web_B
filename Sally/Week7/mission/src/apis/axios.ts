@@ -6,7 +6,7 @@ interface CustomInternalAxiosRequestConfig extends InternalAxiosRequestConfig {
   _retry?: boolean; // 요청 재시도 여부를 나타내는 플래그
 }
 
-// 전역 번수로 refresh 요청의 Promise를 저장해서 중복 요청 방지
+// 전역 변수로 refresh 요청의 Promise를 저장해서 중복 요청 방지
 let refreshPromise: Promise<string> | null = null;
 
 export const axiosInstance = axios.create({
@@ -19,7 +19,7 @@ axiosInstance.interceptors.request.use(
     const { getItem } = useLocalStorage(LOCAL_STORAGE_KEY.accessToken);
     const accessToken = getItem();
 
-    // acessToken이 존재하면 Authorization 헤더에 추가
+    // accessToken이 존재하면 Authorization 헤더에 추가
     if (accessToken) {
       config.headers = config.headers || {};
       config.headers.Authorization = `Bearer ${accessToken}`;
@@ -72,13 +72,13 @@ axiosInstance.interceptors.response.use(
           });
 
           //새 토큰이 반환
-          const { setItem: setAcessToken } = useLocalStorage(
+          const { setItem: setAccessToken } = useLocalStorage(
             LOCAL_STORAGE_KEY.accessToken
           );
           const { setItem: setRefreshToken } = useLocalStorage(
             LOCAL_STORAGE_KEY.refreshToken
           );
-          setAcessToken(data.data.accessToken);
+          setAccessToken(data.data.accessToken);
           setRefreshToken(data.data.refreshToken);
 
           return data.data.accessToken;

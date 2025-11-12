@@ -1,4 +1,4 @@
-import type { CommonResponse, CusorBasedResponse } from "./common";
+import type { CommonResponse, CursorBasedResponse } from "./common";
 
 export type Author = {
   id: number;
@@ -35,7 +35,7 @@ export type LpDetailData = {
   likes: Likes[];
 };
 
-export type ResponseLpListDto = CusorBasedResponse<{
+export type ResponseLpListDto = CursorBasedResponse<{
   data: {
     id: number;
     title: string;
@@ -62,7 +62,7 @@ export type Comment = {
   author: Author;
 };
 
-export type ResponseCommentListDto = CusorBasedResponse<{
+export type ResponseCommentListDto = CursorBasedResponse<{
   data: Comment[];
 }>;
 
