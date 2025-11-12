@@ -14,8 +14,6 @@ import NotFoundPage from "./pages/NotFoundPage";
 import ProtectedLayout from "./layouts/ProtectedLayout";
 import GoogleLoginRedirectPage from "./pages/GoogleLoginRedirectPage";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import CreateLpPage from "./pages/CreateLpPage";
 import LpDetailPage from "./pages/LpDetailPage";
 
 // 1. 홈페이지
@@ -64,10 +62,6 @@ const protectedRoutes: RouteObject[] = [
       {
         path: "my",
         element: <MyPage />,
-      },
-      {
-        path: "createLp",
-        element: <CreateLpPage />,
       },
     ],
   },

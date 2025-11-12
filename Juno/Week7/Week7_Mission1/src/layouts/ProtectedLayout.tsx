@@ -2,11 +2,14 @@ import { Navigate, Outlet } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import Header from "../components/Header";
 import Navbar from "../components/Navbar";
-import FloatingModalButton from "../components/FloatingLpModalButton";
 import useToggle from "../hooks/useToggle";
 
 function ProtectedLayout() {
-  const { isOpen, toggle, close } = useToggle();
+  const {
+    isOpen: isNavbarOpen,
+    toggle: toggleNavbar,
+    close: closeNavbar,
+  } = useToggle();
 
   const { accessToken } = useAuth();
 
@@ -18,12 +21,13 @@ function ProtectedLayout() {
 
   return (
     <div className="min-h-screen w-full flex flex-col bg-gray-50">
-      <Header toggleNavbar={toggle} />
+      <Header toggleNavbar={toggleNavbar} />
       <div className="flex flex-1">
-        <Navbar isOpen={isOpen} onClose={close} />
+        <Navbar isOpen={isNavbarOpen} onClose={closeNavbar} />
         <main className="relative flex-1 mt-15">
-          <Outlet />
-          <FloatingModalButton />
+          <div className="p-6">
+            <Outlet />
+          </div>
         </main>
       </div>
     </div>

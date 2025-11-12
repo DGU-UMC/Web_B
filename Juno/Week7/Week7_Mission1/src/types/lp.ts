@@ -74,3 +74,22 @@ export type ResponseLikeLpDto = CommonResponse<{
   userId: number;
   lpId: number;
 }>;
+
+export type RequestLpDto = {
+  title: string;
+  content: string;
+  thumbnail?: string;
+  tags: string[];
+  published: boolean;
+};
+
+export type ResponseLpDto = CommonResponse<{
+  id: number;
+  title: string;
+  content: string;
+  thumnail: string;
+  published: boolean;
+  authorId: number;
+  updatedAt: string;
+  createdAt: string;
+}>;
