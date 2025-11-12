@@ -16,6 +16,7 @@ interface AuthContextType {
   userId: number | null;
   login: (signInData: RequestSigninDto) => Promise<void>;
   logout: () => Promise<void>;
+  updateUserInfo: (params: { name?: string | null; userId?: number | null }) => void;
 }
 
 export const AuthContext = createContext<AuthContextType>({
@@ -25,6 +26,7 @@ export const AuthContext = createContext<AuthContextType>({
   userId: null,
   login: async () => {},
   logout: async () => {},
+  updateUserInfo: () => {},
 });
 
 export const AuthProvider = ({ children }: PropsWithChildren) => {
@@ -104,9 +106,45 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
     }
   };
 
+  const updateUserInfo = ({
+    name,
+    userId: nextUserId,
+  }: {
+    name?: string | null;
+    userId?: number | null;
+  }) => {
+    if (name !== undefined) {
+      if (name) {
+        setUserNameInStorage(name);
+        setUserName(name);
+      } else {
+        removeUserNameFromStorage();
+        setUserName(null);
+      }
+    }
+
+    if (nextUserId !== undefined) {
+      if (nextUserId !== null) {
+        setUserIdInStorage(nextUserId);
+        setUserId(nextUserId);
+      } else {
+        removeUserIdFromStorage();
+        setUserId(null);
+      }
+    }
+  };
+
   return (
     <AuthContext.Provider
-      value={{ accessToken, refreshToken, userName, userId, login, logout }}
+      value={{
+        accessToken,
+        refreshToken,
+        userName,
+        userId,
+        login,
+        logout,
+        updateUserInfo,
+      }}
     >
       {children}
     </AuthContext.Provider>

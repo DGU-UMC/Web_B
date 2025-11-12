@@ -42,3 +42,19 @@ export type ResponseMyInfoDTO = CommonResponse<{
   createdAt: Date;
   updatedAt: Date;
 }>;
+
+export type RequestUpdateProfileDto = {
+  name?: string;
+  bio?: string | null;
+  avatar?: string | null;
+};
+
+export type ResponseUpdateProfileDto = CommonResponse<{
+  id: number;
+  name: string;
+  email: string;
+  bio: string | null;
+  avatar: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+}>;
