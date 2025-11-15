@@ -25,7 +25,7 @@ export type Lp = {
   id: number;
   title: string;
   content: string;
-  thumnail: string;
+  thumbnail: string;
   published: boolean;
   authorId: number;
   updatedAt: string;
@@ -40,7 +40,7 @@ export type ResponseLpDetailDto = CommonResponse<{
   id: number;
   title: string;
   content: string;
-  thumnail: string;
+  thumbnail: string;
   published: boolean;
   authorId: number;
   updatedAt: string;
@@ -87,7 +87,7 @@ export type ResponseLpDto = CommonResponse<{
   id: number;
   title: string;
   content: string;
-  thumnail: string;
+  thumbnail: string;
   published: boolean;
   authorId: number;
   updatedAt: string;

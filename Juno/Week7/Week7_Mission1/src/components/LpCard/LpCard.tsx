@@ -14,11 +14,11 @@ const LpCard = ({ lp }: LpCardProps) => {
   return (
     <div
       onClick={() => navigate(`/lp/${lp.id}`)}
-      className="relative rounded-xl shadow-lg overflow-hidden cursor-pointer flex justify-between items-center w-44 h-62 transition-transform duration-300 hover:scale-105"
+      className="relative rounded-xl shadow-lg overflow-hidden cursor-pointer flex justify-between items-center w-40 h-50 transition-transform duration-300 hover:scale-105"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <img src={`${lp.thumnail}`} alt={`${lp.title}의 이미지`} />
+      <img src={`${lp.thumbnail}`} alt={`${lp.title}의 이미지`} />
       {isHovered && (
         <div className="absolute inset-0 bg-linear-to-t from-black/50 to-transparent backdrop-blur-md flex flex-col justify-center items-center text-white p-4">
           <h2 className="text-lg font-bold leading-snug">{lp.title}</h2>

@@ -67,7 +67,12 @@ const LpDetailPage = () => {
   return (
     <>
       <div className="space-y-2">
-        <img src={detailData.thumnail} alt={`${detailData.title}의 썸네일`} />
+        <div className="w-30 overflow-hidden">
+          <img
+            src={detailData.thumbnail}
+            alt={`${detailData.title}의 썸네일`}
+          />
+        </div>
         <h1>{detailData.title}</h1>
         <p>{detailData.createdAt.slice(0, 10)}</p>
         <p>{detailData.content}</p>
