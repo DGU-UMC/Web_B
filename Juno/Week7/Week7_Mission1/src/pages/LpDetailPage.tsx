@@ -11,6 +11,7 @@ import useGetMyInfo from "../hooks/queries/useGetMyInfo";
 import { useAuth } from "../context/AuthContext";
 import usePostLike from "../hooks/mutations/usePostLike";
 import useDeleteLike from "../hooks/mutations/useDeleteLike";
+import usePostLpComment from "../hooks/mutations/usePostLpComment";
 
 const LpDetailPage = () => {
   const [sort, setSort] = useState<PAGINATION_ORDER>(PAGINATION_ORDER.desc);
@@ -40,6 +41,11 @@ const LpDetailPage = () => {
     .map((like) => like.userId)
     .includes(MyData?.data.id as number);
 
+  const { mutate: commentMutate } = usePostLpComment(
+    parseInt(lpId as string, 10),
+    sort
+  );
+
   const { ref, inView } = useInView({ threshold: 0 });
 
   useEffect(() => {
@@ -54,6 +60,11 @@ const LpDetailPage = () => {
 
   const handleDislikeLp = () => {
     dislikeMutate(parseInt(lpId as string, 10));
+  };
+
+  const handlePostComment = () => {
+    commentMutate(comment);
+    setComment("");
   };
 
   if (isDetailPending || isCommentsPending) {
@@ -102,7 +113,7 @@ const LpDetailPage = () => {
             오래된순
           </button>
         </div>
-        <form className="space-x-2">
+        <div className="space-x-2">
           <input
             type="text"
             name="comment"
@@ -112,13 +123,13 @@ const LpDetailPage = () => {
             placeholder="댓글을 입력해주세요."
           />
           <button
-            type="submit"
             className="cursor-pointer px-4 py-2 bg-gray-950 text-gray-50 rounded-xl disabled:bg-gray-400 disabled:cursor-not-allowed"
             disabled={comment.length === 0}
+            onClick={() => handlePostComment()}
           >
             작성
           </button>
-        </form>
+        </div>
         <div className="flex flex-col space-y-2">
           {commentsData.pages
             .map((page) => page.data.data)
