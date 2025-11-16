@@ -3,6 +3,7 @@ import type {
   Comment,
   RequestLpCommentsDto,
   RequestLpDto,
+  RequestPatchLpDto,
   ResponseDeleteLpCommentDto,
   ResponseLikeLpDto,
   ResponseLpCommentsDto,
@@ -10,6 +11,7 @@ import type {
   ResponseLpDto,
   ResponseLpListDto,
   ResponsePatchLpCommentDto,
+  ResponsePatchLpDto,
 } from "../types/lp";
 import { axiosInstance } from "./axios";
 
@@ -58,6 +60,15 @@ export const postLp = async (
   requestLpDto: RequestLpDto
 ): Promise<ResponseLpDto> => {
   const { data } = await axiosInstance.post("v1/lps", requestLpDto);
+
+  return data;
+};
+
+export const patchLp = async (
+  requestPatchLpDto: RequestPatchLpDto
+): Promise<ResponsePatchLpDto> => {
+  const { id, ...body } = requestPatchLpDto;
+  const { data } = await axiosInstance.patch(`v1/lps/${id}`, body);
 
   return data;
 };

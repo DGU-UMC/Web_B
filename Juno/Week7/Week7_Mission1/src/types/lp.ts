@@ -94,6 +94,27 @@ export type ResponseLpDto = CommonResponse<{
   createdAt: string;
 }>;
 
+export type RequestPatchLpDto = {
+  id: number;
+  title: string;
+  content: string;
+  thumbnail?: string;
+  tags: Tag[];
+  published: boolean;
+};
+
+export type ResponsePatchLpDto = CommonResponse<{
+  id: number;
+  title: string;
+  content: string;
+  thumbnail: string;
+  published: boolean;
+  authorId: number;
+  updatedAt: string;
+  createdAt: string;
+  tags: Tag[];
+}>;
+
 export type ResponsePatchLpCommentDto = CommonResponse<Comment>;
 
 export type ResponseDeleteLpCommentDto = CommonResponse<{ message: string }>;

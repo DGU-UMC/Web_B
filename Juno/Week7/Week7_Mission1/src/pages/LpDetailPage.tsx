@@ -12,8 +12,15 @@ import { useAuth } from "../context/AuthContext";
 import usePostLike from "../hooks/mutations/usePostLike";
 import useDeleteLike from "../hooks/mutations/useDeleteLike";
 import usePostLpComment from "../hooks/mutations/usePostLpComment";
+import usePatchLp from "../hooks/mutations/usePatchLp";
 
 const LpDetailPage = () => {
+  // LP 상세 정보 수정 로직
+  const [isPatching, setIsPatching] = useState(false);
+  const [patchedTitle, setPatchedTitle] = useState("");
+  const [patchedContent, setPatchedContent] = useState("");
+  const { mutate: patchMutate } = usePatchLp();
+
   const [sort, setSort] = useState<PAGINATION_ORDER>(PAGINATION_ORDER.desc);
   const [comment, setComment] = useState("");
   const { lpId } = useParams();
@@ -84,15 +91,62 @@ const LpDetailPage = () => {
             alt={`${detailData.title}의 썸네일`}
           />
         </div>
-        <h1>{detailData.title}</h1>
+        <h1 className={`${isPatching ? "hidden" : ""}`}>{detailData.title}</h1>
+        <input
+          type="text"
+          name="content"
+          value={patchedTitle}
+          onChange={(e) => setPatchedTitle(e.target.value)}
+          className={`flex-1 px-2 border rounded-lg ${
+            isPatching ? "" : "hidden"
+          }`}
+        />
         <p>{detailData.createdAt.slice(0, 10)}</p>
-        <p>{detailData.content}</p>
-        <button onClick={isLiked ? handleDislikeLp : handleLikeLp}>
-          <Heart
-            color={isLiked ? "red" : "black"}
-            fill={isLiked ? "red" : "transparent"}
-          />
-        </button>
+        <p className={`${isPatching ? "hidden" : ""}`}>{detailData.content}</p>
+        <input
+          type="text"
+          name="content"
+          value={patchedContent}
+          onChange={(e) => setPatchedContent(e.target.value)}
+          className={`flex-1 px-2 border rounded-lg ${
+            isPatching ? "" : "hidden"
+          }`}
+        />
+        <div className="flex space-x-4">
+          <button onClick={isLiked ? handleDislikeLp : handleLikeLp}>
+            <Heart
+              color={isLiked ? "red" : "black"}
+              fill={isLiked ? "red" : "transparent"}
+            />
+          </button>
+          <button
+            onClick={() => setIsPatching(true)}
+            disabled={MyData?.data.id !== detailData.authorId}
+            className={`cursor-pointer w-20 box-border px-4 py-2 bg-gray-950 text-gray-50 rounded-xl disabled:bg-gray-300 disabled:cursor-not-allowed ${
+              isPatching ? "hidden" : ""
+            }`}
+          >
+            수정
+          </button>
+          <button
+            onClick={() => {
+              setIsPatching(false);
+              patchMutate({
+                id: detailData.id,
+                title: patchedTitle,
+                content: patchedContent,
+                thumbnail: detailData.thumbnail,
+                tags: detailData.tags,
+                published: detailData.published,
+              });
+            }}
+            className={`cursor-pointer w-20 box-border px-4 py-2 bg-gray-950 text-gray-50 rounded-xl ${
+              isPatching ? "" : "hidden"
+            }`}
+          >
+            완료
+          </button>
+        </div>
       </div>
       <div className="w-full h-px bg-black my-10"></div>
       <div className="flex flex-col space-y-2">
