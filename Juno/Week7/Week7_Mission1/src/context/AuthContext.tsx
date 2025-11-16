@@ -7,7 +7,8 @@ import {
 import type { RequestSigninDto } from "../types/auth";
 import useLocalStorage from "../hooks/useLocalStorage";
 import { LOCAL_STORAGE_KEY } from "../constants/key";
-import { postSignin, postLogout } from "../apis/auth";
+import usePostSignin from "../hooks/mutations/usePostSignin";
+import usePostLogout from "../hooks/mutations/usePostLogout";
 
 interface AuthContextType {
   accessToken: string | null;
@@ -42,13 +43,14 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
     getRefreshTokenFromStorage()
   );
 
+  const { mutate: signinMutate, data: signinData } = usePostSignin();
   const login = async (signInData: RequestSigninDto) => {
     try {
-      const { data } = await postSignin(signInData);
+      await signinMutate(signInData);
 
-      if (data) {
-        const newAccessToken = data.accessToken;
-        const newRefreshToken = data.refreshToken;
+      if (signinData) {
+        const newAccessToken = signinData.data.accessToken;
+        const newRefreshToken = signinData.data.refreshToken;
 
         setAccessTokenInStorage(newAccessToken);
         setRefreshTokenInStorage(newRefreshToken);
@@ -56,7 +58,7 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
         setAccessToken(newAccessToken);
         setRefreshToken(newRefreshToken);
         alert("로그인 성공");
-        window.location.href = "/my"; // 마이페이지 이동
+        window.location.href = "/"; // 홈 화면으로 이동
       }
     } catch (error) {
       console.error("로그인 오류", error);
@@ -64,9 +66,10 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
     }
   };
 
+  const { mutate: logoutMutate } = usePostLogout();
   const logout = async () => {
     try {
-      await postLogout();
+      await logoutMutate();
       removeAccessTokenFromStorage();
       removeRefreshTokenFromStorage();
 
@@ -74,6 +77,7 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
       setRefreshToken(null);
 
       alert("로그아웃 성공");
+      window.location.href = "/login"; // 로그인 페이지로 이동
     } catch (error) {
       console.error("로그아웃 오류", error);
       alert("로그아웃 실패");

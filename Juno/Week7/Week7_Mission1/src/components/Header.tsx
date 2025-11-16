@@ -1,6 +1,6 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { getMyInfo } from "../apis/auth";
+import { getMyInfo } from "../apis/users";
 import { useEffect, useState } from "react";
 
 interface HeaderProps {

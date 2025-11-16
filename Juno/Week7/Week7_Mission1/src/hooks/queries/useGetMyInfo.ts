@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { getMyInfo } from "../../apis/auth";
+import { getMyInfo } from "../../apis/users";
 import { QUERY_KEY } from "../../constants/key";
 
 const useGetMyInfo = (accessToken: string | null) => {

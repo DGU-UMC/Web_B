@@ -1,5 +1,8 @@
 import { useEffect } from "react";
 import { NavLink } from "react-router-dom";
+import WithdrawalModal from "./WithdrawalModal";
+import useToggle from "../hooks/useToggle";
+import { useAuth } from "../context/AuthContext";
 
 interface NavbarProps {
   isOpen: boolean;
@@ -32,6 +35,11 @@ const Navbar = ({ isOpen, onClose }: NavbarProps) => {
       document.body.style.overflow = "unset";
     };
   }, [isOpen]);
+
+  // 회원 탈퇴 모달 토글 로직
+  const { isOpen: isWithdrawalModalOpen, open, close } = useToggle();
+  const { accessToken } = useAuth();
+  const isWithdrawalModalAllowed = !!accessToken;
 
   return (
     <>
@@ -74,9 +82,19 @@ const Navbar = ({ isOpen, onClose }: NavbarProps) => {
             <NavLink to="#">Terms of Service</NavLink>
             <NavLink to="#">Contact</NavLink>
             {/* #: 눌러도 이동이 안 된다. */}
+            <button
+              onClick={open}
+              disabled={!isWithdrawalModalAllowed}
+              className={`cursor-pointer disabled:cursor-not-allowed ${
+                isWithdrawalModalAllowed ? "hover:text-blue-500" : ""
+              }`}
+            >
+              탈퇴하기
+            </button>
           </div>
         </div>
       </nav>
+      <WithdrawalModal isOpen={isWithdrawalModalOpen} onClose={close} />
     </>
   );
 };

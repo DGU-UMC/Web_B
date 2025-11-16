@@ -1,11 +1,11 @@
 import { useMutation } from "@tanstack/react-query";
-import { patchMyInfo } from "../../apis/users";
+import { postLogout } from "../../apis/auth";
 import { queryClient } from "../../App";
 import { QUERY_KEY } from "../../constants/key";
 
-const usePatchMyInfo = () => {
+const usePostLogout = () => {
   return useMutation({
-    mutationFn: patchMyInfo,
+    mutationFn: postLogout,
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: [QUERY_KEY.myInfo],
@@ -14,4 +14,4 @@ const usePatchMyInfo = () => {
   });
 };
 
-export default usePatchMyInfo;
+export default usePostLogout;
