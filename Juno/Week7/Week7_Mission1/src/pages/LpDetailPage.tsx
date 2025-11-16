@@ -4,7 +4,7 @@ import useGetInfiniteComments from "../hooks/queries/useGetInfiniteComments";
 import { useEffect, useState } from "react";
 import { PAGINATION_ORDER } from "../enums/common";
 import { useInView } from "react-intersection-observer";
-import Comment from "../components/Comment/Comment";
+import CommentCard from "../components/Comment/CommentCard";
 import CommentSkeletonList from "../components/Comment/CommentSkeletonList";
 import { Heart } from "lucide-react";
 import useGetMyInfo from "../hooks/queries/useGetMyInfo";
@@ -135,11 +135,7 @@ const LpDetailPage = () => {
             .map((page) => page.data.data)
             .flat()
             .map((comment) => (
-              <Comment
-                key={comment.id}
-                nickname={comment.author.name}
-                content={comment.content}
-              />
+              <CommentCard key={comment.id} comment={comment} />
             ))}
           {isFetching && <CommentSkeletonList count={10} />}
         </div>

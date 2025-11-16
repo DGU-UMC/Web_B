@@ -93,3 +93,7 @@ export type ResponseLpDto = CommonResponse<{
   updatedAt: string;
   createdAt: string;
 }>;
+
+export type ResponsePatchLpCommentDto = CommonResponse<Comment>;
+
+export type ResponseDeleteLpCommentDto = CommonResponse<{ message: string }>;
