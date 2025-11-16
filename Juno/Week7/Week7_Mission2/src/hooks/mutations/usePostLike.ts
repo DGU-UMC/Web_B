@@ -16,14 +16,16 @@ const usePostLike = () => {
         queryKey: [QUERY_KEY.lps, lpId],
       });
 
-      // 현재 캐시된 데이터 가져오기
+      // 현재 캐시된 데이터 가져오기(실패 시 롤백용)
       const previousLpPost = queryClient.getQueryData<ResponseLpDetailDto>([
         QUERY_KEY.lps,
         lpId,
       ]);
 
-      // 데이터를 복사해 새로운 객체 생성(실패 시 롤백용)
-      const newLpPost = { ...previousLpPost };
+      // 데이터를 복사해 새로운 객체 생성
+      const newLpPost = JSON.parse(
+        JSON.stringify(previousLpPost)
+      ) as ResponseLpDetailDto;
 
       // 좋아요 여부 확인 로직
       const me = queryClient.getQueryData<ResponseUserInfoDto>([
@@ -31,16 +33,14 @@ const usePostLike = () => {
       ]);
       const userId = Number(me?.data.id);
       const likedIndex =
-        previousLpPost?.data.likes.findIndex(
-          (like) => like.userId === userId
-        ) ?? -1; // 좋아요를 누르지 않았다면 -1 반환
+        newLpPost?.data.likes.findIndex((like) => like.userId === userId) ?? -1; // 좋아요를 누르지 않았다면 -1 반환
 
       // 좋아요 로직
       if (likedIndex >= 0) {
-        previousLpPost?.data.likes.splice(likedIndex, 1);
+        newLpPost?.data.likes.splice(likedIndex, 1);
       } else {
         const newLike = { userId: userId, lpId: lpId } as Likes; // UI 업데이트용이므로 데이터가 유효하지 않아도 괜찮다.
-        previousLpPost?.data.likes.push(newLike);
+        newLpPost?.data.likes.push(newLike);
       }
       queryClient.setQueryData([QUERY_KEY.lps, lpId], newLpPost);
 
@@ -51,7 +51,7 @@ const usePostLike = () => {
       console.log(err, newLpId);
       queryClient.setQueryData(
         [QUERY_KEY.lps, newLpId],
-        context?.previousLpPost?.data.id
+        context?.previousLpPost
       );
     },
     // onSettled: API 요청이 끝난 후 성공하든 실패하든 실행
