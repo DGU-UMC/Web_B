@@ -1,4 +1,5 @@
 import type {
+  RequestPatchUserInfoDto,
   RequestSigninDto,
   RequestSignupDto,
   ResponseSigninDto,
@@ -31,6 +32,14 @@ export const postLogout = async () => {
 
 export const getMyInfo = async (): Promise<ResponseUserInfoDto> => {
   const { data } = await axiosInstance.get("v1/users/me");
+
+  return data;
+};
+
+export const patchMyInfo = async (
+  body: RequestPatchUserInfoDto
+): Promise<ResponseUserInfoDto> => {
+  const { data } = await axiosInstance.patch("v1/users", body);
 
   return data;
 };

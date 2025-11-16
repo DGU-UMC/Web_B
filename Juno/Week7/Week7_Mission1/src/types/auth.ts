@@ -44,3 +44,9 @@ export type ResponseUserInfoDto = CommonResponse<{
   createdAt: string;
   updatedAt: string;
 }>;
+
+export type RequestPatchUserInfoDto = {
+  name: string;
+  bio: string | null;
+  avatar: string;
+};
