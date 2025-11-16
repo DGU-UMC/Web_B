@@ -1,7 +1,7 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { getMyInfo } from "../apis/users";
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import useGetMyInfo from "../hooks/queries/useGetMyInfo";
 
 interface HeaderProps {
   toggleNavbar: () => void;
@@ -11,19 +11,7 @@ const Header = ({ toggleNavbar }: HeaderProps) => {
   const navigate = useNavigate();
 
   const { accessToken, logout } = useAuth();
-
-  const [myName, setMyName] = useState("");
-
-  useEffect(() => {
-    if (!accessToken) return;
-
-    const getMyName = async () => {
-      const data = await getMyInfo();
-      setMyName(data.data.name);
-    };
-
-    getMyName();
-  }, [accessToken]);
+  const { data } = useGetMyInfo(accessToken);
 
   const handleLogout = async () => {
     await logout();
@@ -61,7 +49,7 @@ const Header = ({ toggleNavbar }: HeaderProps) => {
           {accessToken && (
             <>
               <span className="font-medium text-gray-700">
-                {myName}님 반갑습니다.
+                {data?.data.name}님 반갑습니다.
               </span>
               <button
                 className="font-bold text-gray-700 hover:text-blue-500"
