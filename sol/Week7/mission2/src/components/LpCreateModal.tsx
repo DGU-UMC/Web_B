@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import useCreateLp from "../hooks/mutations/useCreateLp";
+import { uploadImage } from "../apis/upload";
 
 interface LpCreateModalProps {
   onClose: () => void;
@@ -11,6 +12,7 @@ const LpCreateModal = ({ onClose }: LpCreateModalProps) => {
   const [tagInput, setTagInput] = useState("");
   const [tags, setTags] = useState<string[]>([]);
   const [thumbnailUrl, setThumbnailUrl] = useState("");
+  const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
 
   const { mutateAsync: createLp, isPending } = useCreateLp();
 
@@ -30,13 +32,19 @@ const LpCreateModal = ({ onClose }: LpCreateModalProps) => {
   };
 
   const handleSubmit = async () => {
+    let finalThumbnail = thumbnailUrl || undefined;
+    if (thumbnailFile) {
+      const res = await uploadImage(thumbnailFile, true);
+      finalThumbnail =
+        res.data?.data?.imageUrl || res.data?.imageUrl || finalThumbnail;
+    }
     await createLp(
       {
         title,
         content,
         published: true,
         tags,
-        thumbnail: thumbnailUrl || undefined,
+        thumbnail: finalThumbnail,
       },
       {
         onSuccess: () => {
@@ -44,6 +52,7 @@ const LpCreateModal = ({ onClose }: LpCreateModalProps) => {
           setContent("");
           setTags([]);
           setThumbnailUrl("");
+          setThumbnailFile(null);
           onClose();
         },
       }
@@ -146,7 +155,7 @@ const LpCreateModal = ({ onClose }: LpCreateModalProps) => {
           </div>
         )}
 
-        <div className="mb-3">
+        {/* <div className="mb-3">
           <label className="block text-sm font-medium mb-1">
             썸네일 URL (선택)
           </label>
@@ -156,6 +165,25 @@ const LpCreateModal = ({ onClose }: LpCreateModalProps) => {
             className="w-full border border-gray-300 rounded-md px-3 py-2"
             placeholder="이미지 URL을 입력하세요"
           />
+        </div> */}
+
+        <div className="mb-3">
+          <label className="block text-sm font-medium mb-1">
+            썸네일 파일 업로드 (선택)
+          </label>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file) setThumbnailFile(file);
+            }}
+          />
+          {thumbnailFile && (
+            <p className="text-sm text-gray-600 mt-1">
+              선택됨: {thumbnailFile.name}
+            </p>
+          )}
         </div>
 
         <button

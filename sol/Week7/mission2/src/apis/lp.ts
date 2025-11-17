@@ -8,8 +8,9 @@ import type {
   ResponseLpDto,
   ResponseCommentListDto,
   ResponseCommentDto,
+  CreateLpRequest,
+  UpdateLpRequest,
 } from "../types/lp";
-import type { CreateLpRequest } from "../types/lp";
 export const getLpList = async (
   paginationDto: PaginationDto
 ): Promise<ResponseLpListDto> => {
@@ -47,6 +48,19 @@ export const createLp = async (
   body: CreateLpRequest
 ): Promise<ResponseLpDto> => {
   const { data } = await axiosInstance.post("/v1/lps", body);
+  return data;
+};
+
+export const updateLp = async ({
+  lpId,
+  ...body
+}: UpdateLpRequest): Promise<ResponseLpDto> => {
+  const { data } = await axiosInstance.patch(`/v1/lps/${lpId}`, body);
+  return data;
+};
+
+export const deleteLp = async ({ lpId }: RequestLpDto) => {
+  const { data } = await axiosInstance.delete(`/v1/lps/${lpId}`);
   return data;
 };
 

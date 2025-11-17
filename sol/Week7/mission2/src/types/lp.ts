@@ -69,6 +69,14 @@ export type CreateLpRequest = {
   tags: string[];
   published: boolean;
 };
+export type UpdateLpRequest = {
+  lpId: number;
+  title?: string;
+  content?: string;
+  thumbnail?: string | null;
+  tags?: string[];
+  published?: boolean;
+};
 
 export type ResponseLpDto = CommonResponse<Lp>;
 export type ResponseLpListDto = CursorBasedResponse<Lp[]>;

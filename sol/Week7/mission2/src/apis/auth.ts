@@ -4,6 +4,7 @@ import type {
   ResponseMyInfoDto,
   ResponseSigninDto,
   ResponseSignupDto,
+  UpdateProfileRequestDto,
 } from "../types/auth";
 import { axiosInstance } from "./axios";
 
@@ -32,14 +33,12 @@ export const postLogout = async () => {
   return data;
 };
 
-export const patchMyProfile = async (formData: FormData) => {
-  const { data } = await axiosInstance.patch("/v1/users/me", formData, {
-    headers: { "Content-Type": "multipart/form-data" },
-  });
+export const patchMyProfile = async (body: UpdateProfileRequestDto) => {
+  const { data } = await axiosInstance.patch("/v1/users", body);
   return data;
 };
 
 export const deleteAccount = async () => {
-  const { data } = await axiosInstance.delete("/v1/users/me");
+  const { data } = await axiosInstance.delete("/v1/users");
   return data;
 };

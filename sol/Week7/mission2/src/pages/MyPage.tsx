@@ -3,6 +3,7 @@ import { useAuth } from "../context/AuthContext";
 import useGetMyInfo from "../hooks/queries/useGetMyInfo";
 import { useNavigate } from "react-router-dom";
 import useUpdateProfile from "../hooks/mutations/useUpdateProfile";
+import { uploadImage } from "../apis/upload";
 
 const MyPage = () => {
   const navigate = useNavigate();
@@ -15,11 +16,13 @@ const MyPage = () => {
   const [name, setName] = useState("");
   const [bio, setBio] = useState("");
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
+  const [avatarUrl, setAvatarUrl] = useState("");
 
   useEffect(() => {
     if (me?.data) {
       setName(me.data.name ?? "");
       setBio(me.data.bio ?? "");
+      setAvatarUrl(me.data.avatar ?? "");
     }
   }, [me]);
 
@@ -29,18 +32,25 @@ const MyPage = () => {
   };
 
   const handleUpdate = async () => {
-    const formData = new FormData();
-    formData.append("name", name);
-    formData.append("bio", bio ?? "");
+    let finalAvatar = avatarUrl || undefined;
     if (avatarFile) {
-      formData.append("avatar", avatarFile);
+      const res = await uploadImage(avatarFile, false);
+      finalAvatar =
+        res.data?.data?.imageUrl || res.data?.imageUrl || finalAvatar;
     }
-    await updateProfile(formData, {
-      onSuccess: () => {
-        setIsEditOpen(false);
-        setAvatarFile(null);
+    await updateProfile(
+      {
+        name,
+        bio: bio || null,
+        avatar: finalAvatar ?? null,
       },
-    });
+      {
+        onSuccess: () => {
+          setIsEditOpen(false);
+          setAvatarFile(null);
+        },
+      }
+    );
   };
 
   return (
@@ -119,22 +129,31 @@ const MyPage = () => {
                 placeholder="소개를 입력하세요 (비워도 저장 가능)"
               />
 
-              <label className="block text-sm font-medium mb-1">
-                프로필 사진
-              </label>
-              <input
-                type="file"
-                accept="image/*"
-                onChange={(e) => {
-                  const file = e.target.files?.[0];
-                  if (file) setAvatarFile(file);
-                }}
-              />
-              {avatarFile && (
-                <p className="text-sm text-gray-600 mt-1">
-                  선택됨: {avatarFile.name}
-                </p>
-              )}
+            <label className="block text-sm font-medium mb-1">
+              프로필 사진 URL (선택)
+            </label>
+            <input
+              className="w-full border border-gray-300 rounded-md px-3 py-2 mb-3"
+              value={avatarUrl}
+              onChange={(e) => setAvatarUrl(e.target.value)}
+              placeholder="이미지 URL을 입력하세요"
+            />
+            <label className="block text-sm font-medium mb-1">
+              프로필 사진 업로드 (선택)
+            </label>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) setAvatarFile(file);
+              }}
+            />
+            {avatarFile && (
+              <p className="text-sm text-gray-600 mt-1">
+                선택됨: {avatarFile.name}
+              </p>
+            )}
 
               <button
                 className="w-full mt-4 bg-pink-600 text-white py-2 rounded-md disabled:bg-gray-300"
