@@ -9,6 +9,7 @@ import useDeleteLike from "../hooks/mutations/useDeleteLike";
 
 const LpDetailPage = () => {
   const { lpId } = useParams<{ lpId: string }>();
+  const numericLpId = Number(lpId);
   const { accessToken } = useAuth();
 
   const { mutate: likeMutate } = usePostLike();
@@ -18,42 +19,36 @@ const LpDetailPage = () => {
     data: lp,
     isPending,
     isError,
-  } = useGetLpDetail({ lpId: Number(lpId) });
+  } = useGetLpDetail({ lpId: numericLpId });
 
   const { data: me } = useGetMyInfo(accessToken);
 
   const handleLikeLp = () => {
-    likeMutate({ lpId: Number(lpId) });
+    likeMutate({ lpId: numericLpId });
   };
-
-  const isLiked = lp?.data.likes
-    .map((like) => like.userId)
-    .includes(me?.data.id as number);
 
   const handleDislikeLp = () => {
-    disLikeMutate({ lpId: Number(lpId) });
+    disLikeMutate({ lpId: numericLpId });
   };
-
-  const currentUserId = 5;
 
   if (isPending)
     return <div className="mt-20 text-center items-center">로딩중...</div>;
-  if (isError)
+  if (isError || !lp)
     return <div className="mt-20 text-center items-center">에러 발생!</div>;
 
   const lpDetail: LpDetailData = lp.data;
 
+  const isLiked =
+    lpDetail?.likes
+      ?.map((like) => like.userId)
+      .includes((me?.data?.id as number | undefined) ?? -1) ?? false;
+
   const authorName = lpDetail.author?.name || "알 수 없음";
   const authorId = lpDetail.authorId;
 
-  const isAuthor = accessToken && authorId === currentUserId;
+  const isAuthor = accessToken && authorId === me?.data?.id;
 
   const date = new Date(lpDetail.createdAt).toLocaleDateString("ko-KR");
-
-  // const userLiked = lpDetail.likes.some(
-  //   (like) => like.userId === currentUserId
-  // );
-  // const likeCount = lpDetail.likes.length;
 
   return (
     <div className="mt-20 max-w-4xl mx-auto bg-gray-600 p-8 pt-4 min-h-screen">
@@ -102,7 +97,7 @@ const LpDetailPage = () => {
       </p>
 
       <div className="flex flex-wrap space-x-2 mb-8 justify-center">
-        {lpDetail.tags.map((tag, index) => (
+        {(lpDetail.tags ?? []).map((tag, index) => (
           <span
             key={index}
             className="px-3 py-1 bg-gray-700 text-pink-400 rounded-full text-sm font-medium hover:bg-gray-600 transition duration-150 cursor-pointer"

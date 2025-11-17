@@ -13,8 +13,8 @@ export type ResponseSignupDto = CommonResponse<{
   id: number;
   name: string;
   email: string;
-  bio: boolean;
-  avatar: string;
+  bio: string | null;
+  avatar: string | null;
   createdAt: Date;
   updatedAt: Date;
 }>;
@@ -36,7 +36,7 @@ export type ResponseMyInfoDto = CommonResponse<{
   id: number;
   name: string;
   email: string;
-  bio: boolean;
+  bio: string | null;
   avatar: string | null;
   createdAt: Date;
   updatedAt: Date;

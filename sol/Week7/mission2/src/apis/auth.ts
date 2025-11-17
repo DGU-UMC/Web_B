@@ -31,3 +31,15 @@ export const postLogout = async () => {
   const { data } = await axiosInstance.post("/v1/auth/signout");
   return data;
 };
+
+export const patchMyProfile = async (formData: FormData) => {
+  const { data } = await axiosInstance.patch("/v1/users/me", formData, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
+  return data;
+};
+
+export const deleteAccount = async () => {
+  const { data } = await axiosInstance.delete("/v1/users/me");
+  return data;
+};

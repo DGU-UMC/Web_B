@@ -1,40 +1,152 @@
 import { useEffect, useState } from "react";
-import { getMyInfo } from "../apis/auth";
-import type { ResponseMyInfoDto } from "../types/auth";
 import { useAuth } from "../context/AuthContext";
+import useGetMyInfo from "../hooks/queries/useGetMyInfo";
 import { useNavigate } from "react-router-dom";
+import useUpdateProfile from "../hooks/mutations/useUpdateProfile";
 
 const MyPage = () => {
   const navigate = useNavigate();
-  const { logout } = useAuth();
-  const [data, setData] = useState<ResponseMyInfoDto>();
+  const { logout, accessToken } = useAuth();
+  const { data: me, isPending } = useGetMyInfo(accessToken);
+  const { mutateAsync: updateProfile, isPending: isUpdating } =
+    useUpdateProfile();
+
+  const [isEditOpen, setIsEditOpen] = useState(false);
+  const [name, setName] = useState("");
+  const [bio, setBio] = useState("");
+  const [avatarFile, setAvatarFile] = useState<File | null>(null);
 
   useEffect(() => {
-    const getData = async () => {
-      const response = await getMyInfo();
-      console.log(response);
-      setData(response);
-    };
-    getData();
-  }, []);
+    if (me?.data) {
+      setName(me.data.name ?? "");
+      setBio(me.data.bio ?? "");
+    }
+  }, [me]);
 
   const handleLogout = async () => {
     await logout();
     navigate("/");
   };
 
-  return (
-    <div>
-      <h1>{data?.data?.name}</h1>
-      <img src={data?.data?.avatar as string} alt={"구글 로고"} />
-      <h1>{data?.data?.email}</h1>
+  const handleUpdate = async () => {
+    const formData = new FormData();
+    formData.append("name", name);
+    formData.append("bio", bio ?? "");
+    if (avatarFile) {
+      formData.append("avatar", avatarFile);
+    }
+    await updateProfile(formData, {
+      onSuccess: () => {
+        setIsEditOpen(false);
+        setAvatarFile(null);
+      },
+    });
+  };
 
-      <button
-        className="cursor-pointer bg-blue-300 rounded-sm p-5 hover:scale-90"
-        onClick={handleLogout}
-      >
-        로그아웃
-      </button>
+  return (
+    <div className="pt-24 pb-10 px-4 flex justify-center">
+      <div className="w-full max-w-3xl space-y-4">
+        {isPending ? (
+          <div className="p-6 text-center">내 정보 로딩 중...</div>
+        ) : (
+          <>
+            <div className="flex items-center gap-4">
+              <img
+                src={
+                  me?.data?.avatar ||
+                  "https://via.placeholder.com/120x120.png?text=Avatar"
+                }
+                alt="프로필"
+                className="w-24 h-24 rounded-full object-cover"
+              />
+              <div>
+                <h1 className="text-2xl font-bold">{me?.data?.name}</h1>
+                <p className="text-gray-600">{me?.data?.email}</p>
+                <p className="text-gray-700 mt-2">
+                  {me?.data?.bio || "소개가 없습니다."}
+                </p>
+              </div>
+            </div>
+
+            <div className="space-x-2">
+              <button
+                className="px-4 py-2 bg-gray-800 text-white rounded-md"
+                onClick={() => setIsEditOpen(true)}
+              >
+                설정
+              </button>
+              <button
+                className="px-4 py-2 bg-blue-500 text-white rounded-md"
+                onClick={handleLogout}
+              >
+                로그아웃
+              </button>
+            </div>
+          </>
+        )}
+
+        {isEditOpen && (
+          <div
+            className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+            onClick={() => setIsEditOpen(false)}
+          >
+            <div
+              className="bg-white rounded-lg p-6 w-96 text-black relative"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button
+                className="absolute top-2 right-3"
+                onClick={() => setIsEditOpen(false)}
+                aria-label="close"
+              >
+                ✕
+              </button>
+              <h2 className="text-xl font-semibold mb-4">프로필 설정</h2>
+
+              <label className="block text-sm font-medium mb-1">이름</label>
+              <input
+                className="w-full border border-gray-300 rounded-md px-3 py-2 mb-3"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="이름을 입력하세요"
+              />
+
+              <label className="block text-sm font-medium mb-1">Bio</label>
+              <textarea
+                className="w-full border border-gray-300 rounded-md px-3 py-2 mb-3"
+                value={bio}
+                onChange={(e) => setBio(e.target.value)}
+                placeholder="소개를 입력하세요 (비워도 저장 가능)"
+              />
+
+              <label className="block text-sm font-medium mb-1">
+                프로필 사진
+              </label>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) setAvatarFile(file);
+                }}
+              />
+              {avatarFile && (
+                <p className="text-sm text-gray-600 mt-1">
+                  선택됨: {avatarFile.name}
+                </p>
+              )}
+
+              <button
+                className="w-full mt-4 bg-pink-600 text-white py-2 rounded-md disabled:bg-gray-300"
+                onClick={handleUpdate}
+                disabled={isUpdating || !name}
+              >
+                {isUpdating ? "저장 중..." : "저장"}
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 };

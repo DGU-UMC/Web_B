@@ -21,6 +21,16 @@ export type Likes = {
   lpId: number;
 };
 
+export type Comment = {
+  id: number;
+  content: string;
+  userId: number;
+  lpId: number;
+  author?: Author;
+  createdAt: string;
+  updatedAt: string;
+};
+
 export type LpDetailData = {
   id: number;
   title: string;
@@ -52,6 +62,14 @@ export type RequestLpDto = {
   lpId: number;
 };
 
+export type CreateLpRequest = {
+  title: string;
+  content: string;
+  thumbnail?: string | null;
+  tags: string[];
+  published: boolean;
+};
+
 export type ResponseLpDto = CommonResponse<Lp>;
 export type ResponseLpListDto = CursorBasedResponse<Lp[]>;
 export type ResponseLpDetailDto = CommonResponse<LpDetailData>;
@@ -61,3 +79,6 @@ export type ResponseLikeLpDto = CommonResponse<{
   userId: number;
   lpId: number;
 }>;
+
+export type ResponseCommentListDto = CommonResponse<Comment[]>;
+export type ResponseCommentDto = CommonResponse<Comment>;

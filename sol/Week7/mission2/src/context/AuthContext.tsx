@@ -5,6 +5,7 @@ import {
   useState,
   type PropsWithChildren,
 } from "react";
+import { useMutation } from "@tanstack/react-query";
 import type { RequestSigninDto } from "../types/auth";
 import { useLocalStorage } from "../hooks/useLocalStorage";
 import { LOCAL_STORAGE_KEY } from "../constants/key";
@@ -16,6 +17,8 @@ interface AuthContextType {
   userName: string | null;
   login: (signinData: RequestSigninDto) => Promise<void>;
   logout: () => Promise<void>;
+  loginError?: string | null;
+  isLoggingIn?: boolean;
 }
 
 export const AuthContext = createContext<AuthContextType>({
@@ -54,8 +57,9 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
   const [userName, setUserName] = useState<string | null>(
     getUserNameFromStorage()
   );
+  const [loginError, setLoginError] = useState<string | null>(null);
 
-  // 구글 로그인 후 또는 새로고침 시 사용자 이름을 가져오는 효과
+  // 구글 로그인 후 새로고침 시 사용자 이름이 비어있는 경우 보정
   useEffect(() => {
     const fetchMyInfo = async () => {
       try {
@@ -66,45 +70,49 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
         setUserNameInStorage(fetchedName);
         setUserName(fetchedName);
       } catch (error) {
-        console.error("사용자 정보 가져오기 오류", error);
-        // 오류 발생 시 토큰은 있지만 이름은 비워둠
+        console.error("사용자 정보를 가져오지 못했습니다", error);
+        // 오류 발생 시 토큰은 살려두고 이름만 비움
         setUserName(null);
       }
     };
 
     if (accessToken) {
-      // 구글 로그인 후 토큰만 저장된 상태, 혹은 새로고침 시 이 로직이 실행
+      // 기존 로그인 토큰이 저장된 상태, 단발성 새로고침 보정 로직 수행
       if (!userName) {
         fetchMyInfo();
       }
     } else {
-      // 토큰이 없으면 이름 초기화
+      // 토큰 없으면 이름 초기화
       setUserName(null);
     }
   }, [accessToken, setUserNameInStorage, userName]);
 
-  const login = async (signinData: RequestSigninDto) => {
-    try {
-      const { data } = await postSignin(signinData);
+  const loginMutation = useMutation({
+    mutationFn: (signinData: RequestSigninDto) => postSignin(signinData),
+    onSuccess: ({ data }) => {
+      setLoginError(null);
+      const newAccessToken = data.accessToken;
+      const newRefreshToken = data.refreshToken;
+      const newUserName = data.name;
 
-      if (data) {
-        const newAccessToken = data.accessToken;
-        const newRefreshToken = data.refreshToken;
-        const newUserName = data.name;
+      setAccessTokenInStorage(newAccessToken);
+      setRefreshTokenInStorage(newRefreshToken);
+      setUserNameInStorage(newUserName);
 
-        setAccessTokenInStorage(newAccessToken);
-        setRefreshTokenInStorage(newRefreshToken);
-        setUserNameInStorage(newUserName);
-
-        setAccessToken(newAccessToken);
-        setRefreshToken(newRefreshToken);
-        alert("로그인 성공");
-        window.location.href = "/my";
-      }
-    } catch (error) {
-      console.error("로그인 오류", error);
+      setAccessToken(newAccessToken);
+      setRefreshToken(newRefreshToken);
+      setUserName(newUserName);
+      alert("로그인 성공");
+      window.location.href = "/";
+    },
+    onError: () => {
+      setLoginError("로그인에 실패했습니다. 이메일과 비밀번호를 확인해주세요.");
       alert("로그인 실패");
-    }
+    },
+  });
+
+  const login = async (signinData: RequestSigninDto) => {
+    await loginMutation.mutateAsync(signinData);
   };
 
   const logout = async () => {
@@ -127,7 +135,15 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
 
   return (
     <AuthContext.Provider
-      value={{ accessToken, refreshToken, userName, login, logout }}
+      value={{
+        accessToken,
+        refreshToken,
+        userName,
+        login,
+        logout,
+        loginError,
+        isLoggingIn: loginMutation.isPending,
+      }}
     >
       {children}
     </AuthContext.Provider>
