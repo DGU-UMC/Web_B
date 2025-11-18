@@ -31,10 +31,10 @@ const Header = ({ toggleNavbar }: HeaderProps) => {
   };
 
   return (
-    <header className="bg-white shadow-md fixed w-full z-10">
+    <header className="bg-gray-50 shadow-md fixed w-full z-50">
       <div className="flex items-center justify-between p-4">
         <div className="flex items-center space-x-2">
-          <button className="w-6 cursor-pointer" onClick={toggleNavbar}>
+          <button className="w-6 cursor-pointer z-50" onClick={toggleNavbar}>
             <img src="/images/burger.svg" alt="Burger Image" />
           </button>
           <NavLink to="/" className="text-xl font-bold text-gray-900">
