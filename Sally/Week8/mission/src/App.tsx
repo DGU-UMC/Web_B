@@ -15,6 +15,7 @@ import { AuthProvider } from "./context/AuthContext";
 import ProtectedLayout from "./layouts/ProtectedLayout";
 import GoogleLogin from "./pages/GoogleLogin";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import ThrottlePage from "./pages/ThrottlePage";
 
 const publicRoutes: RouteObject[] = [
   {
@@ -27,6 +28,7 @@ const publicRoutes: RouteObject[] = [
       { path: "signup", element: <Signup /> },
       { path: "v1/auth/google/callback", element: <GoogleLogin /> },
       { path: "lp/:id", element: <LpDetail /> },
+      { path: "throttle", element: <ThrottlePage /> },
     ],
   },
 ];
