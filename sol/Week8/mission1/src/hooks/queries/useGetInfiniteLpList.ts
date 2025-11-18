@@ -12,10 +12,11 @@ function useGetInfiniteLpList(
       getLpList({ cursor: pageParam, limit, search, order }),
     queryKey: [QUERY_KEY.lps, search, order],
     initialPageParam: 0,
-    getNextPageParam: (lastPage /*allPages*/) => {
-      // console.log(lastPage, allPages);
-      return lastPage.data.hasNext ? lastPage.data.nextCursor : undefined;
-    },
+    enabled: search !== undefined, // 검색어가 비어도 기본 목록을 불러오도록 유지
+    staleTime: 1000 * 60 * 3, // 3분 동안 신선하게 유지
+    gcTime: 1000 * 60 * 10, // 10분 후 캐시 정리
+    getNextPageParam: (lastPage /*allPages*/) =>
+      lastPage.data.hasNext ? lastPage.data.nextCursor : undefined,
   });
 }
 
