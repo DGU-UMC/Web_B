@@ -3,7 +3,7 @@ interface HamburgerProps {
     isOpen: boolean;
 }
 
-export const HamburgerButton = ({onClick, isOpen=true}: HamburgerProps) => {
+export const HamburgerButton = ({onClick, isOpen}: HamburgerProps) => {
     return (
         <button 
             onClick={onClick}
