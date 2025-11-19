@@ -1,4 +1,4 @@
-// useThrottle : 주어진 함수가 자주 호출될 때
+/ useThrottle : 주어진 함수가 자주 호출될 때
 // 최소 interval 간격으로만 실행되도록 throttled function을 반환한다.
 
 import { useCallback, useRef } from "react";

@@ -16,7 +16,7 @@ export const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
     document.addEventListener("keydown", handleEscape);
 
     return () => {
-      window.removeEventListener("keydown", handleEscape);
+      document.removeEventListener("keydown", handleEscape);
     };
   }, [isOpen, onClose]);
 
