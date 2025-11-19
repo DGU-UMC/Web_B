@@ -1,6 +1,5 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { useState } from "react";
 import useGetMyInfo from "../hooks/queries/useGetMyInfo";
 
 interface HeaderProps {

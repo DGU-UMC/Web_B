@@ -16,7 +16,7 @@ function useThrottle<T>(value: T, delay: number = 500): T {
       // 충분한 시간이 지남: 현재 시각으로 lastExecuted 업데이트
       lastExecuted.current = Date.now();
 
-      // 최신 value를 throttledValute에 저장해서 컴포넌트 리렌더링
+      // 최신 value를 throttledValue에 저장해서 컴포넌트 리렌더링
       setThrottledValue(value);
     } else {
       // 시간이 덜 지남: delay 시간 후에 최신 value로 업데이트
