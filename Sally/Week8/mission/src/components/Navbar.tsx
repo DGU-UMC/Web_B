@@ -47,13 +47,13 @@ const Navbar = () => {
               <>
                 <Link
                   to={"/login"}
-                  className="text-gray-300 darjk:text-gray-300 hover:text-pink-500 "
+                  className="text-gray-300 hover:text-pink-500 "
                 >
                   로그인
                 </Link>
                 <Link
                   to={"/signup"}
-                  className="text-gray-300 darjk:text-gray-300 hover:text-pink-500 "
+                  className="text-gray-300  hover:text-pink-500 "
                 >
                   회원가입
                 </Link>
@@ -71,13 +71,13 @@ const Navbar = () => {
                 )}
                 <Link
                   to={"/mypage"}
-                  className="text-gray-300 darjk:text-gray-300 hover:text-pink-500 " // 모바일에서 숨김
+                  className="text-gray-300 hover:text-pink-500 " // 모바일에서 숨김
                 >
                   마이페이지
                 </Link>
                 <button
                   onClick={handleLogout}
-                  className="text-gray-300 darjk:text-gray-300 hover:text-pink-500 " // 모바일에서 숨김
+                  className="text-gray-300  hover:text-pink-500 " // 모바일에서 숨김
                 >
                   로그아웃
                 </button>
