@@ -10,7 +10,7 @@ function useThrottle<T>(value: T, delay: number = 500): T {
 
   // 2. Ref lastExecuted: 마지막으로 실행된 시간을 기록하는 변수
   // useRef 사용하면 컴포넌트가 리렌더링 되어도 값이 유지되고, 변경되어도 리렌더링 트리거하지 않는다
-  const lastExecuted: React.RefObject<number> = useRef<number>(Date.now());
+  const lastExecuted = useRef<number>(Date.now());
 
   // useEffect: value, delay가 변경될 때 아래 로직 실행
   useEffect(() => {
@@ -39,4 +39,5 @@ function useThrottle<T>(value: T, delay: number = 500): T {
 
   return throttledValue;
 }
+
 export default useThrottle;
