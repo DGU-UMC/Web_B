@@ -11,14 +11,7 @@ const Home = () => {
   );
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { accessToken } = useAuth();
-  const {
-    data,
-    isLoading,
-    isError,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-  } = useGetLpList({
+  const { data, isLoading, isError } = useGetLpList({
     order: sortOrder,
   });
 
@@ -33,12 +26,6 @@ const Home = () => {
   }
 
   const lps = data?.pages.flatMap((page) => page.data.data) || [];
-
-  // 디버깅: LP 데이터 확인
-  if (lps.length > 0) {
-    console.log("LP 데이터 샘플:", lps[0]);
-    console.log("썸네일 URL:", lps[0]?.thumbnail);
-  }
 
   return (
     <div className="p-4 relative">
@@ -76,16 +63,9 @@ const Home = () => {
               className="group relative aspect-square overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 bg-gray-200"
             >
               <img
-                src={lp.thumbnail || "https://via.placeholder.com/300"}
+                src={lp.thumbnail}
                 alt={lp.title}
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                onError={(e) => {
-                  // 이미지 로딩 실패 시 placeholder로 대체
-                  const target = e.target as HTMLImageElement;
-                  if (!target.src.includes("via.placeholder.com")) {
-                    target.src = "https://via.placeholder.com/300";
-                  }
-                }}
               />
             </Link>
           ))
@@ -95,18 +75,6 @@ const Home = () => {
           </div>
         )}
       </div>
-
-      {hasNextPage && (
-        <div className="flex justify-center mt-8">
-          <button
-            onClick={() => fetchNextPage()}
-            disabled={isFetchingNextPage}
-            className="px-6 py-3 bg-gray-800 text-white rounded-lg hover:bg-gray-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {isFetchingNextPage ? "Loading..." : "더 보기"}
-          </button>
-        </div>
-      )}
 
       {accessToken && (
         <button

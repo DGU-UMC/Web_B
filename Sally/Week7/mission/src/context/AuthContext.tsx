@@ -13,16 +13,23 @@ interface AuthContextType {
   accessToken: string | null;
   refreshToken: string | null;
   userName: string | null;
+  userId: number | null;
   login: (signInData: RequestSigninDto) => Promise<void>;
   logout: () => Promise<void>;
+  updateUserInfo: (params: {
+    name?: string | null;
+    userId?: number | null;
+  }) => void;
 }
 
 export const AuthContext = createContext<AuthContextType>({
   accessToken: null,
   refreshToken: null,
   userName: null,
+  userId: null,
   login: async () => {},
   logout: async () => {},
+  updateUserInfo: () => {},
 });
 
 export const AuthProvider = ({ children }: PropsWithChildren) => {
@@ -43,6 +50,11 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
     setItem: setUserNameInStorage,
     removeItem: removeUserNameFromStorage,
   } = useLocalStorage(LOCAL_STORAGE_KEY.userName);
+  const {
+    getItem: getUserIdFromStorage,
+    setItem: setUserIdInStorage,
+    removeItem: removeUserIdFromStorage,
+  } = useLocalStorage(LOCAL_STORAGE_KEY.userId);
 
   const [accessToken, setAccessToken] = useState<string | null>(
     getAccessTokenFromStorage()
@@ -53,6 +65,7 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
   const [userName, setUserName] = useState<string | null>(
     getUserNameFromStorage()
   );
+  const [userId, setUserId] = useState<number | null>(getUserIdFromStorage());
 
   const login = async (signInData: RequestSigninDto) => {
     try {
@@ -62,9 +75,11 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
         setAccessTokenInStorage(data.accessToken);
         setRefreshTokenInStorage(data.refreshToken);
         setUserNameInStorage(data.name);
+        setUserIdInStorage(data.id);
         setAccessToken(data.accessToken);
         setRefreshToken(data.refreshToken);
         setUserName(data.name);
+        setUserId(data.id);
         alert("로그인에 성공했습니다.");
         window.location.replace("/mypage");
       }
@@ -80,9 +95,11 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
       removeAccessTokenFromStorage();
       removeRefreshTokenFromStorage();
       removeUserNameFromStorage();
+      removeUserIdFromStorage();
       setAccessToken(null);
       setRefreshToken(null);
       setUserName(null);
+      setUserId(null);
       alert("로그아웃 되었습니다.");
     } catch (error) {
       console.error("로그아웃 오류", error);
@@ -90,9 +107,45 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
     }
   };
 
+  const updateUserInfo = ({
+    name,
+    userId: nextUserId,
+  }: {
+    name?: string | null;
+    userId?: number | null;
+  }) => {
+    if (name !== undefined) {
+      if (name === null) {
+        removeUserNameFromStorage();
+        setUserName(null);
+      } else {
+        setUserNameInStorage(name); // ''(빈 문자열)도 의도면 그대로 저장
+        setUserName(name);
+      }
+    }
+
+    if (nextUserId !== undefined) {
+      if (nextUserId === null) {
+        removeUserIdFromStorage();
+        setUserId(null);
+      } else {
+        setUserIdInStorage(nextUserId);
+        setUserId(nextUserId);
+      }
+    }
+  };
+
   return (
     <AuthContext.Provider
-      value={{ accessToken, refreshToken, userName, login, logout }}
+      value={{
+        accessToken,
+        refreshToken,
+        userName,
+        userId,
+        login,
+        logout,
+        updateUserInfo,
+      }}
     >
       {children}
     </AuthContext.Provider>

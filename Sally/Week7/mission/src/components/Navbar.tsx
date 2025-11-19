@@ -1,11 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { getMyInfo } from "../apis/auth";
 
 const Navbar = () => {
-  const { accessToken, logout } = useAuth();
-  const [userName, setUserName] = useState<string | null>(null);
+  const { accessToken, logout, userName, updateUserInfo } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -13,18 +12,17 @@ const Navbar = () => {
       if (accessToken) {
         try {
           const response = await getMyInfo();
-          setUserName(response?.data?.name || null);
+          updateUserInfo({ name: response?.data?.name || null });
         } catch (error) {
           console.error("사용자 정보 가져오기 실패:", error);
         }
       }
     };
     fetchUserInfo();
-  }, [accessToken]);
+  }, [accessToken, updateUserInfo]);
 
   const handleLogout = async () => {
     await logout();
-    setUserName(null);
     navigate("/");
   };
 

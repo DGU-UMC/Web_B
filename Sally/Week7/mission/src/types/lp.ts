@@ -1,4 +1,4 @@
-import type { CommonResponse, CusorBasedResponse } from "./common";
+import type { CommonResponse, CursorBasedResponse } from "./common";
 
 export type Author = {
   id: number;
@@ -35,7 +35,7 @@ export type LpDetailData = {
   likes: Likes[];
 };
 
-export type ResponseLpListDto = CusorBasedResponse<{
+export type ResponseLpListDto = CursorBasedResponse<{
   data: {
     id: number;
     title: string;
@@ -62,7 +62,7 @@ export type Comment = {
   author: Author;
 };
 
-export type ResponseCommentListDto = CusorBasedResponse<{
+export type ResponseCommentListDto = CursorBasedResponse<{
   data: Comment[];
 }>;
 
@@ -71,6 +71,16 @@ export type RequestCreateCommentDto = {
 };
 
 export type ResponseCreateCommentDto = CommonResponse<Comment>;
+
+export type RequestUpdateCommentDto = {
+  content: string;
+};
+
+export type ResponseUpdateCommentDto = CommonResponse<Comment>;
+
+export type ResponseDeleteCommentDto = CommonResponse<{
+  id: number;
+}>;
 
 export type RequestCreateLpDto = {
   title: string;
@@ -81,3 +91,17 @@ export type RequestCreateLpDto = {
 };
 
 export type ResponseCreateLpDto = CommonResponse<LpDetailData>;
+
+export type RequestUpdateLpDto = {
+  title?: string;
+  content?: string;
+  thumbnail?: string | null;
+  tags?: string[];
+  published?: boolean;
+};
+
+export type ResponseUpdateLpDto = CommonResponse<LpDetailData>;
+
+export type ResponseDeleteLpDto = CommonResponse<{
+  id: number;
+}>;
