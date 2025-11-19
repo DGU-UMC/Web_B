@@ -6,7 +6,7 @@ interface CustomInternalAxiosRequestConfig extends InternalAxiosRequestConfig {
   _retry?: boolean; // 요청 재시도 여부를 나타내는 선택적 속성
 }
 
-// 전역 번수로 refresh 요청의 Promise를 저장해서 중복 요청 방지
+// 전역 변수로 refresh 요청의 Promise를 저장해서 중복 요청 방지
 let refreshPromise: Promise<string> | null = null;
 
 export const axiosInstance = axios.create({
@@ -23,7 +23,7 @@ axiosInstance.interceptors.request.use(
       config.headers = config.headers || {};
       config.headers.Authorization = `Bearer ${accessToken}`;
     }
-    // 수정도나 요청 설정을 반환
+    // 수정된 요청 설정을 반환
     return config;
   },
   // 요청 인터셉터가 실패하면, 에러를 반환
