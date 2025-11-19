@@ -4,6 +4,7 @@ import { useInView } from "react-intersection-observer";
 import LpCard from "../components/LpCard/LpCard";
 import LpCardSkeletonList from "../components/LpCard/LpCardSkeletonList";
 import useDebounce from "../hooks/useDebounce";
+import useThrottle from "../hooks/useThrottle";
 
 const HomePage = () => {
   const [search, setSearch] = useState("");
@@ -19,12 +20,13 @@ const HomePage = () => {
   } = useGetInfiniteLpList(10, debouncedValue, "desc");
 
   const { ref, inView } = useInView({ threshold: 0 });
+  const throttledInView = useThrottle(inView, 500);
 
   useEffect(() => {
-    if (inView) {
+    if (throttledInView) {
       !isFetching && hasNextPage && fetchNextPage();
     }
-  }, [inView, isFetching, hasNextPage, fetchNextPage]);
+  }, [throttledInView, isFetching, hasNextPage, fetchNextPage]);
 
   if (isPending)
     return <div className="mt-20 items-center text-center">로딩중..</div>;
