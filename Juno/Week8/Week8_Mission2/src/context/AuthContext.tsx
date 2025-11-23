@@ -43,14 +43,14 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
     getRefreshTokenFromStorage()
   );
 
-  const { mutate: signinMutate, data: signinData } = usePostSignin();
+  const { mutateAsync: signinMutateAsync } = usePostSignin();
   const login = async (signInData: RequestSigninDto) => {
     try {
-      await signinMutate(signInData);
+      const result = await signinMutateAsync(signInData);
 
-      if (signinData) {
-        const newAccessToken = signinData.data.accessToken;
-        const newRefreshToken = signinData.data.refreshToken;
+      if (result) {
+        const newAccessToken = result.data.accessToken;
+        const newRefreshToken = result.data.refreshToken;
 
         setAccessTokenInStorage(newAccessToken);
         setRefreshTokenInStorage(newRefreshToken);
@@ -66,10 +66,10 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
     }
   };
 
-  const { mutate: logoutMutate } = usePostLogout();
+  const { mutateAsync: logoutMutateAsync } = usePostLogout();
   const logout = async () => {
     try {
-      await logoutMutate();
+      await logoutMutateAsync();
       removeAccessTokenFromStorage();
       removeRefreshTokenFromStorage();
 

@@ -36,7 +36,7 @@ const WithdrawalModal = ({ isOpen, onClose }: WithdrawalModalProps) => {
   }, [isOpen]);
 
   // 회원 탈퇴 로직
-  const { mutate } = useDeleteMyInfo();
+  const { mutateAsync, isLoading } = useDeleteMyInfo();
 
   return (
     <>
@@ -61,8 +61,15 @@ const WithdrawalModal = ({ isOpen, onClose }: WithdrawalModalProps) => {
           <p className="font-bold text-xl">정말 탈퇴하시겠습니까?</p>
           <div className="flex justify-center space-x-8">
             <button
-              onClick={() => mutate()}
-              className="cursor-pointer w-24 box-border px-4 py-2 border border-gray-950 bg-gray-50 text-gray-950 rounded-xl"
+              onClick={async () => {
+                try {
+                  await mutateAsync();
+                } catch (e) {
+                  console.error("탈퇴 실패", e);
+                }
+              }}
+              disabled={isLoading}
+              className="cursor-pointer w-24 box-border px-4 py-2 border border-gray-950 bg-gray-50 text-gray-950 rounded-xl disabled:opacity-60 disabled:cursor-not-allowed"
             >
               예
             </button>
