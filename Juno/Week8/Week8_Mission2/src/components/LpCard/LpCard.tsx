@@ -14,7 +14,7 @@ const LpCard = ({ lp }: LpCardProps) => {
   return (
     <div
       onClick={() => navigate(`/lp/${lp.id}`)}
-      className="relative rounded-xl shadow-lg overflow-hidden cursor-pointer flex justify-between items-center w-40 h-50 transition-transform duration-300 hover:scale-105"
+      className="relative rounded-xl shadow-lg overflow-hidden cursor-pointer w-44 h-64 transition-transform duration-300 hover:scale-105"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >

@@ -1,9 +1,6 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { PAGINATION_ORDER } from "../enums/common";
-import LpCard from "../components/LpCard/LpCard";
-import useGetInfiniteLpList from "../hooks/queries/useGetInfiniteLpList";
-import { useInView } from "react-intersection-observer";
-import LpCardSkeletonList from "../components/LpCard/LpCardSkeletonList";
+import LpListSection from "../components/LpListSection";
 import useDebounce from "../hooks/useDebounce";
 import { SEARCH_DEBOUNCE_DELAY } from "../constants/delay";
 
@@ -11,32 +8,6 @@ function HomePage() {
   const [sort, setSort] = useState<PAGINATION_ORDER>(PAGINATION_ORDER.desc);
   const [search, setSearch] = useState("");
   const debouncedValue = useDebounce(search, SEARCH_DEBOUNCE_DELAY);
-  const {
-    data: lps,
-    isFetching,
-    hasNextPage,
-    isPending,
-    isError,
-    fetchNextPage,
-  } = useGetInfiniteLpList(15, debouncedValue, SEARCH_DEBOUNCE_DELAY, sort);
-
-  // ref: 특정 HTML 요소를 감시한다.
-  // inView: 감시하는 요소가 화면에 보이면 true, 안 보이면 false
-  const { ref, inView } = useInView({ threshold: 0 });
-
-  useEffect(() => {
-    if (inView && !isFetching && hasNextPage) {
-      fetchNextPage();
-    }
-  }, [inView, isFetching, hasNextPage, fetchNextPage]);
-
-  if (isPending) {
-    return <div className="mt-15">Loading...</div>;
-  }
-
-  if (isError) {
-    return <div className="mt-15">Error!</div>;
-  }
 
   return (
     <>
@@ -63,18 +34,7 @@ function HomePage() {
           오래된순
         </button>
       </div>
-      <div className="flex w-full justify-center">
-        <div className="mt-2 grid gap-16 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-          {lps?.pages
-            ?.map((page) => page.data.data)
-            ?.flat() // [[1, 2], [3, 4]].flat() -> [1, 2, 3, 4]
-            ?.map((lp) => (
-              <LpCard key={lp.id} lp={lp} />
-            ))}
-          {isFetching && <LpCardSkeletonList count={15} />}
-        </div>
-      </div>
-      <div ref={ref} className="h-2"></div>
+      <LpListSection search={debouncedValue} order={sort} limit={15} />
     </>
   );
 }
