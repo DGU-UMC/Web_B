@@ -23,13 +23,14 @@ function useThrottle<T>(value: T, delay: number = 500) {
             // 최신 value를 throttledValue에 저장해서 컴포넌트 리렌더링
             setThrottledValue(value);
         } else {
+            const remaining = lastExecuted.current - Date.now() + delay;
             // 충분한 시간이 지나지 않은 경우, delay 시간 후에 업데이트 (최신 value로)
             const timeId = setTimeout(() => {
                 // 타이머가 만료되면, 마지막 업데이트 시간을 현재 시각으로 갱신
                 lastExecuted.current = Date.now();
                 // 최신 value를 throttledValue에 저장해서 컴포넌트 리렌더링
                 setThrottledValue(value);
-            }, delay);
+            }, remaining);
 
             // CleanUp Function 이펙트가 재실행되기 전에 타이머가 실행되지 않았다면
             // 기존 타이머를 clearTimeout을 통해 취소하여 중복 업데이트를 방지
